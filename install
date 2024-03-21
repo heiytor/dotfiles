@@ -1,0 +1,79 @@
+#!/usr/bin/env python
+
+import argparse
+import os
+
+ABS_PATH = os.path.dirname(os.path.abspath(__file__))
+HOME = os.path.expanduser("~")
+ARGS = None
+
+def ask(q: str) -> bool:
+    ans = input(f"{q} [Y/n]: ")
+    return ans.lower() in ["y", "yes"]
+
+
+def check(path: str) -> bool:
+    """
+    Verifies whether a path exists or not.
+    """
+    return os.path.exists(path)
+
+
+def link(src: str, dst: str):
+    src = f"{ABS_PATH}/{src}"
+
+    if not check(src):
+        print(f"Source '{src}' does not exists.")
+        return
+
+    if check(dst):
+        if not ARGS.replace_all and not ask(f"Destination '{dst}' already exists. Do you want to replace it?"):
+            print(f"Link creation canceled. '{dst}' was not replaced.")
+            return
+
+        os.system(f"rm -rf {dst}")
+
+    try:
+        os.symlink(src, dst)
+        print(f"Symbolic link created from '{src}' to '{dst}'.")
+    except OSError as e:
+        print(f"Error creating symbolic link: {e}.")
+
+
+class Install:
+    @staticmethod
+    def with_mng(pkgs: List[str]) -> bool:
+        install = " ".join(pkgs)
+        os.system(f"sudo pacman -S --noconfirm {install}")
+
+    @staticmethod
+    def with_aur(pkgs: str) -> bool:
+        return false
+
+    @staticmethod
+    def with_git(repo: str, dest: Optional[str] = "/tmp") -> bool:
+        return false
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Create symbolic links.")
+    parser.add_argument("--replace-all", action="store_true", help="Replace existing destinations without prompting.")
+    parser.add_argument("--install-pkgs", action="store_true", help="TODO")
+
+    ARGS = parser.parse_args()
+
+    # When installing packages, we must need to install GIT and AUR before install
+    # other packages.
+    if ARGS.install_pkgs: pass # TODO
+        Install.with_mng(["git"])
+
+    # In order to have zsh working, we need to install asdf, oh-my-zsh
+    # and plugins.
+    link("zsh/rc.zsh", f"{HOME}/.zshrc")
+
+    # In order to have nvim working, we need to install the packer.nvim
+    # and plugins.
+    link("nvim", f"{HOME}/.config/nvim")
+
+    link("alacritty", f"{HOME}/.config/alacritty")
+    link("awesome", f"{HOME}/.config/awesome")

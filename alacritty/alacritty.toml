@@ -1,0 +1,51 @@
+[font]
+size = 12
+normal = { family = "JetBrainsMono", style = "Regular" }
+bold = { family = "JetBrainsMono", style = "Bold" }
+italic = { family = "JetBrainsMono", style = "Italic" }
+bold_italic = { family = "JetBrainsMono", style = "Bold Italic" }
+
+[cursor]
+style = { shape = "Underline", blinking = "Off" }
+
+[colors.primary]
+background = "0x161616"
+foreground = "0xC6C6C6"
+
+[colors.normal]
+# "0x767676" # statement
+# "0xC6C6C6" # identifier
+# "0x626262" # comment
+# "0xAF87D7" # const
+
+green = "0xC6C6C6" # commands
+yellow = "0xAF87D7" # strings
+red = "0xAF5F87" # errors
+black = "0x767676" # reserved words
+
+cyan = "0xC6C6C6"
+magenta = "0xC6C6C6"
+blue = "0xC6C6C6"
+white = "0xC6C6C6"
+
+[colors.bright]
+black = "0x727169"
+blue = "0x7fb4ca"
+cyan = "0x7aa89f"
+green = "0x98bb6c"
+magenta = "0x938aa9"
+red = "0xe82424"
+white = "0xdcd7ba"
+yellow = "0xe6c384"
+
+[colors.selection]
+background = "0x303030"
+foreground = "CellForeground"
+
+[[colors.indexed_colors]]
+color = "0xffa066"
+index = 16
+
+[[colors.indexed_colors]]
+color = "0xff5d62"
+index = 17
