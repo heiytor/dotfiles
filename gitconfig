@@ -1,0 +1,28 @@
+[init]
+	defaultBranch = main
+
+[user]
+	name = Heitor Danilo
+	email = heitor.danilo@icloud.com
+
+[core]
+    pager = delta
+    editor = vim
+
+[interactive]
+    diffFilter = delta --color-only
+
+[delta]
+    navigate = true 
+    light = false 
+    side-by-side = true
+
+[merge]
+    conflictstyle = diff3
+
+[diff]
+    colorMoved = default
+
+[includeIf "gitdir:~/oss/"]
+    path = ~/oss/.gitconfig
+

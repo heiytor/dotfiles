@@ -2,14 +2,19 @@
 
 import argparse
 import os
+import shutil
+import subprocess
+from typing import List, Optional
 
 ABS_PATH = os.path.dirname(os.path.abspath(__file__))
 HOME = os.path.expanduser("~")
 ARGS = None
 
-def ask(q: str) -> bool:
-    ans = input(f"{q} [Y/n]: ")
-    return ans.lower() in ["y", "yes"]
+def ask(question: str) -> bool:
+    """
+    Prompt a yes/no question and return True if the user answers yes, otherwise False.
+    """
+    return input(f"{question} [Y/n]: ").lower() in ["y", "yes"]
 
 
 def check(path: str) -> bool:
@@ -19,19 +24,20 @@ def check(path: str) -> bool:
     return os.path.exists(path)
 
 
-def link(src: str, dst: str):
+def link(src: str, dst: str) -> None:
+    """
+    Creates a symbolic link from source to destination. If `dst` exists,
+    it asks for replacement, which is skipped if `ARGS.replace_all` is True.
+    """
     src = f"{ABS_PATH}/{src}"
 
     if not check(src):
         print(f"Source '{src}' does not exists.")
         return
 
-    if check(dst):
-        if not ARGS.replace_all and not ask(f"Destination '{dst}' already exists. Do you want to replace it?"):
-            print(f"Link creation canceled. '{dst}' was not replaced.")
-            return
-
-        os.system(f"rm -rf {dst}")
+    if check(dst) and not ask_remove(dst):
+        print(f"Link creation canceled. '{dst}' was not removed.")
+        return
 
     try:
         os.symlink(src, dst)
@@ -39,41 +45,139 @@ def link(src: str, dst: str):
     except OSError as e:
         print(f"Error creating symbolic link: {e}.")
 
+PKG_MANAGER = "pacman"
+AUR_MANAGER = "yay"
 
-class Install:
+def ask_remove(path: str, sudo: bool = False) -> bool:
+    ans = ask(f"Destination '{path}' already exists. Do you want to remove it?")
+    if not ans:
+        return False
+
+    if sudo:
+        os.system(f"sudo rm -rf {path}")
+    else:
+        os.system(f"rm -rf {path}")
+
+    return True
+
+# TODO: make it a namespace instead of a class
+class install:
     @staticmethod
-    def with_mng(pkgs: List[str]) -> bool:
-        install = " ".join(pkgs)
-        os.system(f"sudo pacman -S --noconfirm {install}")
+    def with_mng(pkgs: List[str]) -> int:
+        """
+        Installs packages using the system package manager.
+
+        Parameters:
+            pkgs (List[str]): List of package names to install.
+
+        Returns:
+            int: Exit code of the installation process.
+        """
+        if not ARGS.install_pkgs:
+            print(f"Aborting installation of {', '.join(pkgs)} with {PKG_MANAGER} because '--install-pkgs' is False.")
+            return 77
+
+        if not ask(f"Installing {', '.join(pkgs)} with {PKG_MANAGER}. Do you want to proceed?"):
+            print(f"Aborting installation of {', '.join(pkgs)}.")
+            return 77
+
+        return os.system(f"sudo pacman -S --noconfirm {' '.join(pkgs)}")
+
 
     @staticmethod
-    def with_aur(pkgs: str) -> bool:
-        return false
+    def with_yay(pkgs: List[str]) -> int:
+        """
+        Installs packages using the yay package manager.
+
+        Parameters:
+            pkgs (List[str]): List of package names to install.
+
+        Returns:
+            int: Exit code of the installation process.
+        """
+        if not ARGS.install_pkgs:
+            print(f"Aborting installation of {', '.join(pkgs)} with {AUR_MANAGER} because '--install-pkgs' is False or yay is not available.")
+            return 77
+
+        return 0
+
 
     @staticmethod
-    def with_git(repo: str, dest: Optional[str] = "/tmp") -> bool:
-        return false
+    def with_git(repos: List[str], dest: str = "/tmp", flags: List[str] = []) -> List[int]:
+        """
+        Clones a Git repository to the specified destination.
+
+        Parameters:
+            repos (List[str]): The URL of the Git repository.
+            dest (str): The destination directory for the clone. Defaults to "/tmp".
+
+        Returns:
+            int: A list of exit codes for each clone process.
+        """
+        if not ARGS.install_pkgs:
+            print(f"Skipping clone {', '.join(repos)} because '--install-pkgs' is False or git is not available.")
+            return [77]
+
+        codes = []
+        for repo in repos:
+            repo_dest = f"{dest}/{os.path.basename(repo).replace('.git', '')}"
+            print(f"\nCloning {repo} into {repo_dest}:")
+
+            if check(repo_dest) and not ask_remove(repo_dest, sudo=True):
+                print(f"Repository clonning canceled. '{repo_dest}' was not removed.")
+                continue
+
+            code = subprocess.call(f"git clone {" ".join(flags)} {repo} {repo_dest}", shell=True)
+            if code == 0:
+                print(f"Cloned Git repository '{repo}' to '{repo_dest}'.")
+            else:
+                print(f"Error cloning Git repository {repo}: code {code}")
+            codes.append(code)
+
+        return codes
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Create symbolic links.")
+    parser = argparse.ArgumentParser(description="")
     parser.add_argument("--replace-all", action="store_true", help="Replace existing destinations without prompting.")
     parser.add_argument("--install-pkgs", action="store_true", help="TODO")
 
     ARGS = parser.parse_args()
 
-    # When installing packages, we must need to install GIT and AUR before install
-    # other packages.
-    if ARGS.install_pkgs: pass # TODO
-        Install.with_mng(["git"])
+    # $HOME/projects is the directory used for armazened program projects.
+    if not check(f"{HOME}/projects"):
+        os.mkdir(f"{HOME}/projects")
 
-    # In order to have zsh working, we need to install asdf, oh-my-zsh
-    # and plugins.
-    link("zsh/rc.zsh", f"{HOME}/.zshrc")
+    match install.with_mng(["git", "git-delta"]):
+        case [0]:
+            link("gitconfig", f"$HOME/.gitconfig")
 
-    # In order to have nvim working, we need to install the packer.nvim
-    # and plugins.
-    link("nvim", f"{HOME}/.config/nvim")
+    match (install.with_mng(["base-devel"]), install.with_git(["https://aur.archlinux.org/yay.git"], dest="/tmp")):
+        case (0, [0]):
+            subprocess.Popen("makepkg -si", cwd="/tmp/yay", shell=True, bufsize=-1).wait()
 
-    link("alacritty", f"{HOME}/.config/alacritty")
-    link("awesome", f"{HOME}/.config/awesome")
+    # For vim, we need at least plug.vim
+    match install.with_yay(["vim"]):
+        case 0:
+            install.with_yay(["curl"])
+            subprocess.Popen("curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim", shell=True, bufsize=-1).wait()
+            link("vimrc", f"{HOME}/.vimrc")
+            pass
+
+    # Neovim is builded from source to get the nightly version. We also
+    # need to install the packer.nvim to plugins.
+    match install.with_git(["https://github.com/neovim/neovim"], dest=f"{HOME}/projects"):
+        case [0]:
+            subprocess.Popen("make CMAKE_BUILD_TYPE=RelWithDebInfo", cwd=f"{HOME}/projects/neovim", shell=True, bufsize=-1).wait()
+            subprocess.Popen("sudo make install", cwd=f"{HOME}/projects/neovim", shell=True, bufsize=-1).wait()
+            install.with_git(["https://github.com/wbthomason/packer.nvim"], dest=f"{HOME}/.local/share/nvim/site/pack/packer/start/packer.nvim", flags=["--depth", "1"])
+            link("nvim", f"{HOME}/.config/nvim")
+
+    # Install programs that don't need any explict dependencies
+    match install.with_yay(["picom", "alacritty", "firefox", "rofi", "awesome-git", "feh", "discord", "polybar"]):
+        case 0:
+            link("awesome", f"{HOME}/.config/awesome")
+            link("alacritty", f"{HOME}/.config/alacritty")
+            link("picom", f"{HOME}/.config/picom")
+            link("rofi", f"{HOME}/.config/rofi")
+            link("polybar", f"{HOME}/.config/polybar")
