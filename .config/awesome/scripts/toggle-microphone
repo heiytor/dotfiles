@@ -1,0 +1,22 @@
+#!/usr/bin/env sh
+
+CWD=$(readlink -f $(dirname $0))
+
+show_splash() {
+    yad \
+    --text "<span size='128pt'>$1</span>" \
+    --center \
+    --fixed \
+    --no-buttons \
+    --timeout 1 \
+    --css $CWD/views/style.$2.css \
+    --borders 50 \
+    --splash \
+    --no-focus
+}
+
+if amixer set Capture toggle && amixer get Capture | grep '\[on\]'; then
+    show_splash  normal
+else
+    show_splash  critical
+fi

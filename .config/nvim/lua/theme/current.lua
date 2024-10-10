@@ -1,0 +1,1 @@
+/home/heitor/.config/awesome/themes/dark/extra/nvim/theme.lua
