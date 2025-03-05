@@ -1,5 +1,0 @@
-require("plugins.lsp.keybindings").setup()
-require("plugins.lsp.mason").setup()
-require("plugins.lsp.servers").setup()
-require("plugins.lsp.cmp").setup()
-require("plugins.lsp.inlay_hints").setup()
