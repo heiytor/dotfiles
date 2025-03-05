@@ -31,11 +31,14 @@ autoload -Uz compinit && compinit
 
 alias dotfiles='/usr/bin/git --git-dir="$HOME/.dotfiles/" --work-tree="$HOME"'
 
+# Make clear also clear the scrollback buffer
+alias clear="printf '\033[2J\033[3J\033[H'"
+alias c="clear"
+
 EDITOR="nvim"
 
 alias reload="omz reload"
 alias v="$EDITOR"
-alias c="clear"
 alias g="git"
 alias tb="nc termbin.com 9999"
 alias ls="exa --icons=always --git"
