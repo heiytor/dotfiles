@@ -25,18 +25,25 @@ else
   export EDITOR='nvim'
 fi
 
-source "$HOME/.asdf/asdf.sh"
-fpath=(${ASDF_DIR}/completions $fpath)
-autoload -Uz compinit && compinit
+export PATH="$HOME/bin:$PATH"
 
+# ASDF setup
+if [ -f "$HOME/bin/asdf" ]; then
+    if [ ! -d "${ASDF_DATA_DIR:-$HOME/.asdf}/completions" ]; then
+        mkdir -p "${ASDF_DATA_DIR:-$HOME/.asdf}/completions"
+        asdf completion zsh > "${ASDF_DATA_DIR:-$HOME/.asdf}/completions/_asdf"
+    fi
+
+    fpath=(${ASDF_DATA_DIR:-$HOME/.asdf}/completions $fpath)
+    autoload -Uz compinit && compinit
+fi
+
+# Track dotfiles directly with git.
+# see: https://wiki.archlinux.org/title/Dotfiles
 alias dotfiles='/usr/bin/git --git-dir="$HOME/.dotfiles/" --work-tree="$HOME"'
 
-# Make clear also clear the scrollback buffer
-alias clear="printf '\033[2J\033[3J\033[H'"
+alias clear="printf '\033[2J\033[3J\033[H'" # Make clear also clear the scrollback buffer
 alias c="clear"
-
-EDITOR="nvim"
-
 alias reload="omz reload"
 alias v="$EDITOR"
 alias g="git"
