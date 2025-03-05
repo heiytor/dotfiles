@@ -34,6 +34,8 @@ if [ -f "$HOME/bin/asdf" ]; then
         asdf completion zsh > "${ASDF_DATA_DIR:-$HOME/.asdf}/completions/_asdf"
     fi
 
+    export PATH="${ASDF_DATA_DIR:-$HOME/.asdf}/shims:$PATH"
+
     fpath=(${ASDF_DATA_DIR:-$HOME/.asdf}/completions $fpath)
     autoload -Uz compinit && compinit
 fi
