@@ -1,0 +1,58 @@
+# Base System
+base
+base-devel
+
+# Audio
+alsa-utils
+pavucontrol
+pulseaudio
+
+# Terminal/Shell
+at
+bat
+btop
+expect
+eza
+fd
+fzf
+kitty
+less
+lsof
+ripgrep
+sd
+tokei
+tree
+vim
+zsh
+feh
+
+# Utilities
+copyq
+flameshot
+git
+git-delta
+inotify-tools
+unzip
+xclip
+yad
+
+# Development
+docker
+docker-compose
+httpie
+insomnia
+luarocks
+
+# Applications
+discord
+firefox
+qbittorrent
+vlc
+
+# Interface
+picom-git
+rofi-git
+
+# Fonts
+ttf-font-awesome
+ttf-nerd-fonts-symbols-mono
