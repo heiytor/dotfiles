@@ -1,1 +1,1 @@
-vim.cmd([[colorscheme moonfly]])
+/home/heitor/.config/awesome/themes/dark/extra/nvim/theme.lua
