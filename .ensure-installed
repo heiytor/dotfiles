@@ -38,6 +38,7 @@ docker-compose
 httpie
 insomnia
 luarocks
+tk
 
 # Applications
 discord
