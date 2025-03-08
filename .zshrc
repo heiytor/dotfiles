@@ -12,7 +12,6 @@ plugins=(
 	docker
 	docker-compose
 	sudo
-	zsh-interactive-cd
 	zsh-syntax-highlighting
 	zsh-autosuggestions
 )
