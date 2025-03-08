@@ -39,34 +39,47 @@ $ dotfiles config --local status.showUntrackedFiles no
 $ grep -v '^#\|^$' $HOME/.ensure-installed | yay -Syu --needed -
 ```
 
-5. **Build Neovim**:
-
-Follow the [official BUILD.md](https://github.com/neovim/neovim/blob/master/BUILD.md)
-
-6. **Install Oh My Zsh and Set ZSH as Default Shell**:
-
-```bash
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-chsh -s $(which zsh)
-```
-
-7. **Download ASDF**:
+5. **Download ASDF**:
 
 Follow the [official getting started guide](https://asdf-vm.com/guide/getting-started.html).
-Install the binary in "$HOME/bin". Then, install all required plugins:
+Install the binary in "$HOME/bin".
+
+Then, install all required plugins:
 ```bash
 $ asdf plugin add golang
 $ asdf plugin add ruby
+$ asdf plugin add nodejs
+$ asdf plugin add python
 $ asdf install # install all versions on "$HOME/.tool-verisons"
 ```
 
-8. **Iniatialize the Docker**
+6. **Build Neovim**:
+
+Follow the [official BUILD.md](https://github.com/neovim/neovim/blob/master/BUILD.md)
+
+Then, update all the packages required:
+```bash
+$ nvim +"lua require('lazy').sync({wait=true}); vim.cmd('qa!')" && nvim -c ":TSUpdate" +qa && nvim -c ":MasonUpdate" +qa
+```
+
+7. **Start Docker**
 
 ```bash
 $ sudo systemctl enable docker
 $ sudo usermod -aG docker $USER
 ```
 
-8. **Finalize Setup**:
+8. **Install Oh My Zsh with plugins and Set ZSH as Default Shell**:
+
+```bash
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+
+git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
+git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+
+chsh -s $(which zsh)
+```
+
+9. **Finalize Setup**:
 
 Restart the system
