@@ -11,12 +11,15 @@ M.scripts_dir = M.root_dir .. "/scripts"
 ---Theme's directory.
 M.themes_dir = M.root_dir .. "/themes"
 
+---View's directory.
+M.views_dir = M.root_dir .. "/views"
+
 ---Awesome's leader key.
 M.modkey = "Mod4"
 
 ---Send a debug notification.
 M.debug = function(title)
-    naughty.notification({ title = title, })
+	naughty.notification({ title = title })
 end
 
 return M
