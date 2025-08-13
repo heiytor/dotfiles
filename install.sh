@@ -76,7 +76,7 @@ else
         
         if [[ -n "$REMOTE" && "$LOCAL" != "$REMOTE" ]]; then
             warning "Updates available from remote repository"
-            read -r -p "Pull latest changes? (y/N): " REPLY
+            read -r -p "Pull latest changes? (y/N): " REPLY </dev/tty
             echo
             if [[ $REPLY =~ ^[Yy]$ ]]; then
                 dotfiles pull origin main
@@ -105,9 +105,6 @@ if ! grep -q 'alias dotfiles=' "$HOME/.bashrc" 2>/dev/null; then
 else
     success "Dotfiles alias already exists in .bashrc"
 fi
-
-log "Sourcing .bashrc..."
-source "$HOME/.bashrc" 2>/dev/null || true
 
 header "💾 Backing up existing files and checking out dotfiles"
 
@@ -234,12 +231,7 @@ log "Setting Zsh as default shell..."
 sudo usermod -s "$(which zsh)" "$USER"
 success "Zsh set as default shell"
 
-# Final setup
 header "🎉 Finalizing setup"
-
-# Source the new shell configuration
-log "Sourcing new configuration..."
-source "$HOME/.bashrc" 2>/dev/null || true
 
 success "Installation completed successfully!"
 
@@ -257,7 +249,7 @@ echo
 success "Enjoy your new setup! 🚀"
 
 echo
-read -r -p "Would you like to reboot now? (y/N): " REPLY
+read -r -p "Would you like to reboot now? (y/N): " REPLY </dev/tty
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]; then
     log "Rebooting system..."
