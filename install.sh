@@ -78,16 +78,24 @@ mkdir -p "$HOME/.config-backup"
 log "Attempting to checkout dotfiles..."
 if ! dotfiles checkout 2>/dev/null; then
     warning "Conflicting files found. Moving them to backup..."
-    dotfiles checkout 2>&1 | grep -E "\s+\." | awk '{print $1}' | while read file; do
-        if [[ -f "$HOME/$file" ]] || [[ -d "$HOME/$file" ]]; then
-            log "Backing up: $file"
-            mkdir -p "$HOME/.config-backup/$(dirname "$file")"
-            mv "$HOME/$file" "$HOME/.config-backup/$file"
-        fi
-    done
-
+    
+    backup_dir="$HOME/.config-backup/backup-$(date +%Y%m%d_%H%M%S)"
+    mkdir -p "$backup_dir"
+    
+    conflicting_files=$(dotfiles checkout 2>&1 | grep -E "^\s+" | awk '{print $1}' | grep -v "^Please" | grep -v "^Aborting")
+    
+    if [[ -n "$conflicting_files" ]]; then
+        echo "$conflicting_files" | while IFS= read -r file; do
+            if [[ -n "$file" && -e "$HOME/$file" ]]; then
+                log "Backing up: $file"
+                mkdir -p "$backup_dir/$(dirname "$file")" 2>/dev/null || true
+                mv "$HOME/$file" "$backup_dir/$file" 2>/dev/null || true
+            fi
+        done
+    fi
+    
     log "Retrying checkout..."
-    dotfiles checkout
+    dotfiles checkout 2>/dev/null
 fi
 success "Dotfiles checked out successfully"
 
