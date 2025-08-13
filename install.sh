@@ -76,26 +76,40 @@ log "Creating backup directory for existing files..."
 mkdir -p "$HOME/.config-backup"
 
 log "Attempting to checkout dotfiles..."
-if ! dotfiles checkout 2>/dev/null; then
-    warning "Conflicting files found. Moving them to backup..."
-    
-    backup_dir="$HOME/.config-backup/backup-$(date +%Y%m%d_%H%M%S)"
-    mkdir -p "$backup_dir"
-    
-    conflicting_files=$(dotfiles checkout 2>&1 | grep -E "^\s+" | awk '{print $1}' | grep -v "^Please" | grep -v "^Aborting")
-    
-    if [[ -n "$conflicting_files" ]]; then
-        echo "$conflicting_files" | while IFS= read -r file; do
-            if [[ -n "$file" && -e "$HOME/$file" ]]; then
-                log "Backing up: $file"
-                mkdir -p "$backup_dir/$(dirname "$file")" 2>/dev/null || true
-                mv "$HOME/$file" "$backup_dir/$file" 2>/dev/null || true
-            fi
-        done
+checkout_output=$(dotfiles checkout 2>&1)
+checkout_exit_code=$?
+if [[ $checkout_exit_code -ne 0 ]]; then
+    if echo "$checkout_output" | grep -q "would be overwritten"; then
+        warning "Conflicting files found. Moving them to backup..."
+        
+        backup_dir="$HOME/.config-backup/backup-$(date +%Y%m%d_%H%M%S)"
+        mkdir -p "$backup_dir"
+        
+        conflicting_files=$(echo "$checkout_output" | grep -E "^\s+" | awk '{print $1}' | grep -v "^Please" | grep -v "^Aborting")
+        
+        if [[ -n "$conflicting_files" ]]; then
+            echo "$conflicting_files" | while IFS= read -r file; do
+                if [[ -n "$file" && -e "$HOME/$file" ]]; then
+                    log "Backing up: $file"
+                    mkdir -p "$backup_dir/$(dirname "$file")" 2>/dev/null || true
+                    mv "$HOME/$file" "$backup_dir/$file" 2>/dev/null || true
+                fi
+            done
+        fi
+        
+        log "Retrying checkout..."
+        if ! dotfiles checkout 2>/dev/null; then
+            error "Still having conflicts after backup. Please check manually:"
+            error "1. Check what files are conflicting: dotfiles status"  
+            error "2. Remove or backup manually: rm filename"
+            error "3. Try checkout again: dotfiles checkout"
+            exit 1
+        fi
+    else
+        error "Checkout failed for unknown reason:"
+        echo "$checkout_output"
+        exit 1
     fi
-    
-    log "Retrying checkout..."
-    dotfiles checkout 2>/dev/null
 fi
 success "Dotfiles checked out successfully"
 
