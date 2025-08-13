@@ -62,8 +62,10 @@ header "⚙️  Setting up dotfiles alias"
 log "Adding dotfiles alias to .bashrc..."
 echo 'alias dotfiles="/usr/bin/git --git-dir=\"\$HOME/.dotfiles/\" --work-tree=\"\$HOME\""' >> "$HOME/.bashrc"
 
-log "Creating a temporary alias for this session"
-alias dotfiles="/usr/bin/git --git-dir=\"$HOME/.dotfiles/\" --work-tree=\"$HOME\""
+log "Creating dotfiles function for this session..."
+dotfiles() {
+    /usr/bin/git --git-dir="$HOME/.dotfiles/" --work-tree="$HOME" "$@"
+}
 
 log "Sourcing .bashrc..."
 source "$HOME/.bashrc" 2>/dev/null || true
