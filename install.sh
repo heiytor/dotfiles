@@ -72,7 +72,8 @@ else
         dotfiles fetch origin
         
         LOCAL=$(dotfiles rev-parse HEAD)
-        REMOTE=$(run_safe dotfiles rev-parse "origin/main" 2>/dev/null || echo "")
+        REMOTE=$(safe dotfiles rev-parse "@{u}" 2>/dev/null || echo "")
+
         
         if [[ -n "$REMOTE" && "$LOCAL" != "$REMOTE" ]]; then
             warning "Updates available from remote repository"
@@ -130,7 +131,7 @@ fi
 if [[ "$needs_checkout" == true ]]; then
     log "Attempting to checkout dotfiles..."
 
-    checkout_output=$(run_safe dotfiles checkout 2>&1)
+    checkout_output=$(safe dotfiles checkout 2>&1)
     checkout_code=$?
 
     if (( checkout_code == 0 )); then
