@@ -49,13 +49,42 @@ fi
 
 header "📂 Cloning dotfiles repository"
 
-if [[ -d "$HOME/.dotfiles" ]]; then
-    warning "Dotfiles directory already exists. Backing up..."
-    mv "$HOME/.dotfiles" "$HOME/.dotfiles.backup.$(date +%Y%m%d_%H%M%S)"
-fi
+dotfiles() {
+    /usr/bin/git --git-dir="$HOME/.dotfiles/" --work-tree="$HOME" "$@"
+}
 
-log "Cloning bare repository..."
-git clone --bare https://github.com/heiytor/dotfiles.git "$HOME/.dotfiles"
+if [[ -d "$HOME/.dotfiles" ]]; then
+    if git --git-dir="$HOME/.dotfiles/" --work-tree="$HOME" status &>/dev/null; then
+        warning "Valid dotfiles repository already exists"
+        log "Fetching latest changes..."
+        dotfiles fetch origin
+        
+        LOCAL=$(dotfiles rev-parse HEAD)
+        REMOTE=$(dotfiles rev-parse origin/main)
+        
+        if [[ "$LOCAL" != "$REMOTE" ]]; then
+            warning "Updates available from remote repository"
+            read -p "Pull latest changes? (y/N): " -n 1 -r
+            echo
+            if [[ $REPLY =~ ^[Yy]$ ]]; then
+                dotfiles pull origin main
+                success "Repository updated"
+            fi
+        else
+            success "Repository is up to date"
+        fi
+    else
+        warning "Invalid dotfiles directory exists. Backing up..."
+        mv "$HOME/.dotfiles" "$HOME/.dotfiles.backup.$(date +%Y%m%d_%H%M%S)"
+        log "Cloning bare repository..."
+        git clone --bare https://github.com/heiytor/dotfiles.git "$HOME/.dotfiles"
+        success "Repository cloned"
+    fi
+else
+    log "Cloning bare repository..."
+    git clone --bare https://github.com/heiytor/dotfiles.git "$HOME/.dotfiles"
+    success "Repository cloned"
+fi
 
 header "⚙️  Setting up dotfiles alias"
 
@@ -67,11 +96,6 @@ else
     success "Dotfiles alias already exists in .bashrc"
 fi
 
-log "Creating dotfiles function for this session..."
-dotfiles() {
-    /usr/bin/git --git-dir="$HOME/.dotfiles/" --work-tree="$HOME" "$@"
-}
-
 log "Sourcing .bashrc..."
 source "$HOME/.bashrc" 2>/dev/null || true
 
@@ -80,47 +104,79 @@ header "💾 Backing up existing files and checking out dotfiles"
 log "Creating backup directory for existing files..."
 mkdir -p "$HOME/.config-backup"
 
-log "Attempting to checkout dotfiles..."
-log "Attempting to checkout dotfiles..."
-if dotfiles checkout 2>/dev/null || true; then
-    log "Checkout successful"
+# First, check the current status
+log "Checking repository status..."
+dotfiles_status=$(dotfiles status --porcelain 2>/dev/null || echo "ERROR")
+
+if [[ "$dotfiles_status" == "ERROR" ]]; then
+    error "Failed to check dotfiles status"
+    exit 1
+elif [[ -z "$dotfiles_status" ]]; then
+    success "Dotfiles are already checked out and up to date"
 else
-    warning "Checkout failed, checking for conflicts..."
-    checkout_output=$(dotfiles checkout 2>&1 || true)
+    log "Attempting to checkout dotfiles..."
     
-    if echo "$checkout_output" | grep -q "would be overwritten"; then
-        warning "Conflicting files found. Moving them to backup..."
-        
-        backup_dir="$HOME/.config-backup/backup-$(date +%Y%m%d_%H%M%S)"
-        mkdir -p "$backup_dir"
-        
-        conflicting_files=$(echo "$checkout_output" | grep -E "^\s+" | awk '{print $1}' | grep -v "^Please" | grep -v "^Aborting")
-        
-        if [[ -n "$conflicting_files" ]]; then
-            echo "$conflicting_files" | while IFS= read -r file; do
-                if [[ -n "$file" && -e "$HOME/$file" ]]; then
-                    log "Backing up: $file"
-                    mkdir -p "$backup_dir/$(dirname "$file")" 2>/dev/null || true
-                    mv "$HOME/$file" "$backup_dir/$file" 2>/dev/null || true
-                fi
-            done
-        fi
-        
-        log "Retrying checkout..."
-        dotfiles checkout 2>/dev/null || warning "Still having issues, continuing anyway..."
+    checkout_output=$(dotfiles checkout 2>&1)
+    checkout_status=$?
+    
+    if [[ $checkout_status -eq 0 ]]; then
+        success "Checkout successful"
     else
-        warning "Checkout had issues but continuing:"
-        echo "$checkout_output"
+        warning "Checkout failed, checking for conflicts..."
+        
+        if echo "$checkout_output" | grep -q "would be overwritten"; then
+            warning "Conflicting files found. Moving them to backup..."
+            
+            backup_dir="$HOME/.config-backup/backup-$(date +%Y%m%d_%H%M%S)"
+            mkdir -p "$backup_dir"
+            
+            conflicting_files=$(echo "$checkout_output" | grep -E "^\s+" | sed 's/^[[:space:]]*//' | grep -v "^Please" | grep -v "^Aborting")
+            
+            if [[ -n "$conflicting_files" ]]; then
+                log "Found conflicting files:"
+                echo "$conflicting_files"
+                
+                echo "$conflicting_files" | while IFS= read -r file; do
+                    if [[ -n "$file" && -e "$HOME/$file" ]]; then
+                        log "Backing up: $file"
+                        file_dir=$(dirname "$file")
+                        if [[ "$file_dir" != "." ]]; then
+                            mkdir -p "$backup_dir/$file_dir" 2>/dev/null || true
+                        fi
+                        mv "$HOME/$file" "$backup_dir/$file" 2>/dev/null || {
+                            error "Failed to backup $file"
+                        }
+                    fi
+                done
+                
+                log "Retrying checkout after backup..."
+                if dotfiles checkout; then
+                    success "Checkout successful after backing up conflicts"
+                else
+                    error "Checkout still failing after backup"
+                    log "You may need to manually resolve conflicts"
+                    log "Check: dotfiles status"
+                    exit 1
+                fi
+            else
+                error "Could not identify conflicting files"
+                echo "$checkout_output"
+                exit 1
+            fi
+        else
+            error "Checkout failed for unknown reason:"
+            echo "$checkout_output"
+            exit 1
+        fi
     fi
 fi
-success "Dotfiles checked out successfully"
 
 log "Configuring dotfiles repository..."
 dotfiles config --local status.showUntrackedFiles no
 success "Dotfiles repository configured"
 
 header "📦 Installing essential packages"
-#
+
 if [[ -f "$HOME/.ensure-installed" ]]; then
     log "Found .ensure-installed file. Installing packages..."
     log "This may take a while depending on your internet connection..."
@@ -180,7 +236,7 @@ log "Setting Zsh as default shell..."
 chsh -s "$(which zsh)"
 success "Zsh set as default shell"
 
-# Step 10: Final setup
+# Final setup
 header "🎉 Finalizing setup"
 
 # Source the new shell configuration
