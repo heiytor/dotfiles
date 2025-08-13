@@ -9,40 +9,57 @@ tag.connect_signal("request::default_layouts", function()
 end)
 
 screen.connect_signal("request::desktop_decoration", function(s)
-	awful.tag({ "1", "2", "3", "4", "5", "6", "7", "8", "9" }, s, awful.layout.layouts[1])
-
-	s.tag_list = awful.widget.taglist({
-		screen = s,
-		filter = awful.widget.taglist.filter.all,
-		buttons = {
-			awful.button({}, 1, function(t)
-				t:view_only()
-			end),
-		},
-	})
-
-	s.task_list = awful.widget.tasklist({
-		screen = s,
-		filter = awful.widget.tasklist.filter.focused,
-		buttons = {},
-	})
-
+	awful.tag({ "1", "2", "3", "4", "5", "6", "7", "8", "" }, s, awful.layout.layouts[1])
 	s.mywibox = awful.wibar({
-		position = "bottom",
+		position = "top",
 		screen = s,
+		height = 25,
 		widget = {
 			layout = wibox.layout.align.horizontal,
 			{
 				layout = wibox.layout.fixed.horizontal,
-				s.tag_list,
+				awful.widget.taglist({ -- Taglist
+					screen = s,
+					filter = awful.widget.taglist.filter.all,
+					buttons = {
+						awful.button({}, 1, function(t)
+							t:view_only()
+						end),
+					},
+				}),
 			},
-			s.task_list,
+			awful.widget.tasklist({ -- Tasklist
+				screen = s,
+				filter = awful.widget.tasklist.filter.currenttags,
+				buttons = {
+					awful.button({}, 1, function(c)
+						c:activate({ context = "tasklist", action = "toggle_minimization" })
+					end),
+				},
+			}),
 			{
 				layout = wibox.layout.fixed.horizontal,
 				wibox.widget.textclock(),
 				volume_widget({ widget_type = "arc" }),
 				notification_widget.build("🔔", "🔕", false),
 				wibox.widget.systray(),
+				awful.widget.layoutbox({ -- Layoutbox
+					screen = s,
+					buttons = {
+						awful.button({}, 1, function()
+							awful.layout.inc(1)
+						end),
+						awful.button({}, 3, function()
+							awful.layout.inc(-1)
+						end),
+						awful.button({}, 4, function()
+							awful.layout.inc(-1)
+						end),
+						awful.button({}, 5, function()
+							awful.layout.inc(1)
+						end),
+					},
+				}),
 			},
 		},
 	})

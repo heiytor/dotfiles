@@ -17,7 +17,6 @@ return {
 			cmp.setup({
 				snippet = {
 					expand = function(args)
-						vim.snippet.expand(args.body) -- Native engine
 						require("luasnip").lsp_expand(args.body) -- LuaSnip engine
 					end,
 				},

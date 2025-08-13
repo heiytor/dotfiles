@@ -62,6 +62,7 @@ return {
 				end,
 				["gopls"] = function()
 					require("lspconfig").gopls.setup({
+						cmd = { "gopls", "--remote=auto" },
 						capabilities = default_capabilities(),
 						settings = {
 							gopls = {

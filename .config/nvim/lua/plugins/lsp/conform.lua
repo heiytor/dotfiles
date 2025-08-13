@@ -8,7 +8,7 @@ return {
 		formatters_by_ft = {
 			go = { "goimports", "gofumpt" },
 			lua = { "stylua" },
-			yaml = { "yamlfmt" },
+			-- yaml = { "yamlfmt" },
 			ruby = { "rubocop" },
 		},
 		formatters = {
