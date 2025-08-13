@@ -57,49 +57,29 @@ fi
 
 header "📂 Cloning dotfiles repository"
 
-# Create dotfiles function for this session
 dotfiles() {
     /usr/bin/git --git-dir="$HOME/.dotfiles/" --work-tree="$HOME" "$@"
 }
 
-# Check if .dotfiles already exists and if it's a valid git repository
-if [[ -d "$HOME/.dotfiles" ]]; then
-    if git --git-dir="$HOME/.dotfiles/" --work-tree="$HOME" status &>/dev/null; then
+if [[ ! -d "$HOME/.dotfiles" ]]; then
+    log "Cloning bare repository..."
+    git clone --bare https://github.com/heiytor/dotfiles.git "$HOME/.dotfiles"
+    success "Repository cloned"
+else
+    if safe git --git-dir="$HOME/.dotfiles/" --work-tree="$HOME" status &>/dev/null; then
         warning "Valid dotfiles repository already exists"
         log "Fetching latest changes..."
         dotfiles fetch origin
         
-        # Get the current branch name
-        CURRENT_BRANCH=$(dotfiles symbolic-ref --short HEAD 2>/dev/null || dotfiles rev-parse --abbrev-ref HEAD)
-        log "Current branch: $CURRENT_BRANCH"
-        
-        # Get the default remote branch
-        DEFAULT_BRANCH=$(dotfiles symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@')
-        
-        # If we couldn't get the default branch, try to detect it
-        if [[ -z "$DEFAULT_BRANCH" ]]; then
-            log "Detecting default branch..."
-            dotfiles remote set-head origin --auto &>/dev/null || true
-            DEFAULT_BRANCH=$(dotfiles symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@')
-        fi
-        
-        # If still no default branch, use the current branch
-        if [[ -z "$DEFAULT_BRANCH" ]]; then
-            DEFAULT_BRANCH="$CURRENT_BRANCH"
-        fi
-        
-        log "Remote branch: origin/$DEFAULT_BRANCH"
-        
-        # Check if there are updates
         LOCAL=$(dotfiles rev-parse HEAD)
-        REMOTE=$(dotfiles rev-parse "origin/$DEFAULT_BRANCH" 2>/dev/null || echo "")
+        REMOTE=$(run_safe dotfiles rev-parse "origin/main" 2>/dev/null || echo "")
         
         if [[ -n "$REMOTE" && "$LOCAL" != "$REMOTE" ]]; then
             warning "Updates available from remote repository"
             read -p "Pull latest changes? (y/N): " -n 1 -r
             echo
             if [[ $REPLY =~ ^[Yy]$ ]]; then
-                dotfiles pull origin "$DEFAULT_BRANCH"
+                dotfiles pull origin main
                 success "Repository updated"
             fi
         elif [[ -z "$REMOTE" ]]; then
@@ -114,10 +94,6 @@ if [[ -d "$HOME/.dotfiles" ]]; then
         git clone --bare https://github.com/heiytor/dotfiles.git "$HOME/.dotfiles"
         success "Repository cloned"
     fi
-else
-    log "Cloning bare repository..."
-    git clone --bare https://github.com/heiytor/dotfiles.git "$HOME/.dotfiles"
-    success "Repository cloned"
 fi
 
 header "⚙️  Setting up dotfiles alias"
