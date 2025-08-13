@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -e
 
@@ -76,7 +76,7 @@ else
         
         if [[ -n "$REMOTE" && "$LOCAL" != "$REMOTE" ]]; then
             warning "Updates available from remote repository"
-            read -p "Pull latest changes? (y/N): " -n 1 -r
+            read -r -p "Pull latest changes? (y/N): " REPLY
             echo
             if [[ $REPLY =~ ^[Yy]$ ]]; then
                 dotfiles pull origin main
@@ -257,7 +257,7 @@ echo
 success "Enjoy your new setup! 🚀"
 
 echo
-read -p "Would you like to reboot now? (y/N): " -n 1 -r
+read -r -p "Would you like to reboot now? (y/N): " REPLY
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]; then
     log "Rebooting system..."
