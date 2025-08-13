@@ -128,7 +128,7 @@ source "$HOME/.bashrc" 2>/dev/null || true
 header "💾 Backing up existing files and checking out dotfiles"
 
 log "Creating backup directory for existing files..."
-mkdir -p "$HOME/.config-backup"
+mkdir -p "$HOME/.backup"
 
 # Function to handle symlink conflicts intelligently
 handle_symlink_conflicts() {
@@ -229,7 +229,7 @@ if [[ "$needs_checkout" == "true" ]]; then
         if echo "$checkout_output" | grep -q "would be overwritten"; then
             warning "Conflicting files found. Analyzing conflicts..."
             
-            backup_dir="$HOME/.config-backup/backup-$(date +%Y%m%d_%H%M%S)"
+            backup_dir="$HOME/.backup/$(date +%Y%m%d_%H%M%S)"
             mkdir -p "$backup_dir"
             
             # Extract conflicting files more reliably
@@ -333,7 +333,7 @@ header "🐚 Installing Oh My Zsh and plugins"
 
 if [[ ! -d "$HOME/.oh-my-zsh" ]]; then
     log "Installing Oh My Zsh..."
-    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+    RUNZSH=no CHSH=no sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
     success "Oh My Zsh installed"
 else
     success "Oh My Zsh already installed"
