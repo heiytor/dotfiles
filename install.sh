@@ -59,8 +59,13 @@ git clone --bare https://github.com/heiytor/dotfiles.git "$HOME/.dotfiles"
 
 header "⚙️  Setting up dotfiles alias"
 
-log "Adding dotfiles alias to .bashrc..."
-echo 'alias dotfiles="/usr/bin/git --git-dir=\"\$HOME/.dotfiles/\" --work-tree=\"\$HOME\""' >> "$HOME/.bashrc"
+if ! grep -q 'alias dotfiles=' "$HOME/.bashrc" 2>/dev/null; then
+    log "Adding dotfiles alias to .bashrc..."
+    echo 'alias dotfiles="/usr/bin/git --git-dir=\"\$HOME/.dotfiles/\" --work-tree=\"\$HOME\""' >> "$HOME/.bashrc"
+    success "Dotfiles alias added to .bashrc"
+else
+    success "Dotfiles alias already exists in .bashrc"
+fi
 
 log "Creating dotfiles function for this session..."
 dotfiles() {
