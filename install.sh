@@ -59,17 +59,41 @@ if [[ -d "$HOME/.dotfiles" ]]; then
         log "Fetching latest changes..."
         dotfiles fetch origin
         
-        LOCAL=$(dotfiles rev-parse HEAD)
-        REMOTE=$(dotfiles rev-parse origin/main)
+        # Get the current branch name
+        CURRENT_BRANCH=$(dotfiles symbolic-ref --short HEAD 2>/dev/null || dotfiles rev-parse --abbrev-ref HEAD)
+        log "Current branch: $CURRENT_BRANCH"
         
-        if [[ "$LOCAL" != "$REMOTE" ]]; then
+        # Get the default remote branch
+        DEFAULT_BRANCH=$(dotfiles symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@')
+        
+        # If we couldn't get the default branch, try to detect it
+        if [[ -z "$DEFAULT_BRANCH" ]]; then
+            log "Detecting default branch..."
+            dotfiles remote set-head origin --auto &>/dev/null || true
+            DEFAULT_BRANCH=$(dotfiles symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@')
+        fi
+        
+        # If still no default branch, use the current branch
+        if [[ -z "$DEFAULT_BRANCH" ]]; then
+            DEFAULT_BRANCH="$CURRENT_BRANCH"
+        fi
+        
+        log "Remote branch: origin/$DEFAULT_BRANCH"
+        
+        # Check if there are updates
+        LOCAL=$(dotfiles rev-parse HEAD)
+        REMOTE=$(dotfiles rev-parse "origin/$DEFAULT_BRANCH" 2>/dev/null || echo "")
+        
+        if [[ -n "$REMOTE" && "$LOCAL" != "$REMOTE" ]]; then
             warning "Updates available from remote repository"
             read -p "Pull latest changes? (y/N): " -n 1 -r
             echo
             if [[ $REPLY =~ ^[Yy]$ ]]; then
-                dotfiles pull origin main
+                dotfiles pull origin "$DEFAULT_BRANCH"
                 success "Repository updated"
             fi
+        elif [[ -z "$REMOTE" ]]; then
+            warning "Could not check for remote updates (branch may not exist on remote)"
         else
             success "Repository is up to date"
         fi
