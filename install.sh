@@ -333,7 +333,7 @@ header "🐚 Installing Oh My Zsh and plugins"
 
 if [[ ! -d "$HOME/.oh-my-zsh" ]]; then
     log "Installing Oh My Zsh..."
-    RUNZSH=no CHSH=no sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
     success "Oh My Zsh installed"
 else
     success "Oh My Zsh already installed"
@@ -356,7 +356,7 @@ fi
 success "Zsh plugins installed"
 
 log "Setting Zsh as default shell..."
-chsh -s "$(which zsh)"
+sudo usermod -s "$(which zsh)" "$USER"
 success "Zsh set as default shell"
 
 # Final setup
