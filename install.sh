@@ -78,7 +78,7 @@ mkdir -p "$HOME/.config-backup"
 log "Attempting to checkout dotfiles..."
 if ! dotfiles checkout 2>/dev/null; then
     warning "Conflicting files found. Moving them to backup..."
-    dotfiles checkout 2>&1 | egrep "\s+\." | awk '{print $1}' | while read file; do
+    dotfiles checkout 2>&1 | grep -E "\s+\." | awk '{print $1}' | while read file; do
         if [[ -f "$HOME/$file" ]] || [[ -d "$HOME/$file" ]]; then
             log "Backing up: $file"
             mkdir -p "$HOME/.config-backup/$(dirname "$file")"
