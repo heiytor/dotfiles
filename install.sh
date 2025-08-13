@@ -49,10 +49,12 @@ fi
 
 header "📂 Cloning dotfiles repository"
 
+# Create dotfiles function for this session
 dotfiles() {
     /usr/bin/git --git-dir="$HOME/.dotfiles/" --work-tree="$HOME" "$@"
 }
 
+# Check if .dotfiles already exists and if it's a valid git repository
 if [[ -d "$HOME/.dotfiles" ]]; then
     if git --git-dir="$HOME/.dotfiles/" --work-tree="$HOME" status &>/dev/null; then
         warning "Valid dotfiles repository already exists"
@@ -128,20 +130,96 @@ header "💾 Backing up existing files and checking out dotfiles"
 log "Creating backup directory for existing files..."
 mkdir -p "$HOME/.config-backup"
 
+# Function to handle symlink conflicts intelligently
+handle_symlink_conflicts() {
+    local file="$1"
+    local backup_dir="$2"
+    
+    if [[ -L "$HOME/$file" ]]; then
+        # It's a symlink
+        local target=$(readlink "$HOME/$file")
+        local abs_target=""
+        
+        # Check if target is relative or absolute
+        if [[ "$target" = /* ]]; then
+            # Absolute path
+            abs_target="$target"
+        else
+            # Relative path - resolve it relative to the symlink's directory
+            local symlink_dir=$(dirname "$HOME/$file")
+            abs_target=$(cd "$symlink_dir" && realpath "$target" 2>/dev/null || echo "$symlink_dir/$target")
+        fi
+        
+        # Check if the symlink target is within HOME (likely part of dotfiles)
+        if [[ "$abs_target" == "$HOME"/* ]]; then
+            # Convert to relative path from HOME
+            local relative_target="${abs_target#$HOME/}"
+            
+            # Check if this target will be created by the dotfiles checkout
+            # We do this by checking if the target path exists in the git repository
+            if dotfiles ls-tree HEAD --name-only "$relative_target" 2>/dev/null | grep -q .; then
+                log "  → Symlink points to dotfiles content: $relative_target"
+                log "  → Removing symlink (will be recreated by checkout)"
+                rm -f "$HOME/$file"
+                return 0
+            fi
+        fi
+        
+        # If we get here, it's a symlink to something outside dotfiles
+        # or to something that won't be created by checkout
+        log "  → Backing up symlink: $file -> $target"
+        local file_dir=$(dirname "$file")
+        if [[ "$file_dir" != "." ]]; then
+            mkdir -p "$backup_dir/$file_dir" 2>/dev/null || true
+        fi
+        mv "$HOME/$file" "$backup_dir/$file" 2>/dev/null || {
+            error "Failed to backup $file"
+            return 1
+        }
+    else
+        # Regular file or directory
+        log "  → Backing up: $file"
+        local file_dir=$(dirname "$file")
+        if [[ "$file_dir" != "." ]]; then
+            mkdir -p "$backup_dir/$file_dir" 2>/dev/null || true
+        fi
+        mv "$HOME/$file" "$backup_dir/$file" 2>/dev/null || {
+            error "Failed to backup $file"
+            return 1
+        }
+    fi
+    
+    return 0
+}
+
 # First, check the current status
 log "Checking repository status..."
-dotfiles_status=$(dotfiles status --porcelain 2>/dev/null || echo "ERROR")
 
-if [[ "$dotfiles_status" == "ERROR" ]]; then
-    error "Failed to check dotfiles status"
-    exit 1
+# Temporarily disable set -e for this check
+set +e
+dotfiles_status=$(dotfiles status --porcelain 2>/dev/null)
+status_check_result=$?
+set -e
+
+if [[ $status_check_result -ne 0 ]]; then
+    log "Repository needs initial checkout"
+    needs_checkout=true
 elif [[ -z "$dotfiles_status" ]]; then
     success "Dotfiles are already checked out and up to date"
+    needs_checkout=false
 else
+    log "Repository has uncommitted changes or needs checkout"
+    needs_checkout=true
+fi
+
+if [[ "$needs_checkout" == "true" ]]; then
     log "Attempting to checkout dotfiles..."
     
+    # Try checkout and capture both stdout and stderr
+    set +e
     checkout_output=$(dotfiles checkout 2>&1)
     checkout_status=$?
+    set -e
     
     if [[ $checkout_status -eq 0 ]]; then
         success "Checkout successful"
@@ -149,38 +227,59 @@ else
         warning "Checkout failed, checking for conflicts..."
         
         if echo "$checkout_output" | grep -q "would be overwritten"; then
-            warning "Conflicting files found. Moving them to backup..."
+            warning "Conflicting files found. Analyzing conflicts..."
             
             backup_dir="$HOME/.config-backup/backup-$(date +%Y%m%d_%H%M%S)"
             mkdir -p "$backup_dir"
             
+            # Extract conflicting files more reliably
             conflicting_files=$(echo "$checkout_output" | grep -E "^\s+" | sed 's/^[[:space:]]*//' | grep -v "^Please" | grep -v "^Aborting")
             
             if [[ -n "$conflicting_files" ]]; then
                 log "Found conflicting files:"
                 echo "$conflicting_files"
                 
+                # Process each conflicting file
                 echo "$conflicting_files" | while IFS= read -r file; do
                     if [[ -n "$file" && -e "$HOME/$file" ]]; then
-                        log "Backing up: $file"
-                        file_dir=$(dirname "$file")
-                        if [[ "$file_dir" != "." ]]; then
-                            mkdir -p "$backup_dir/$file_dir" 2>/dev/null || true
-                        fi
-                        mv "$HOME/$file" "$backup_dir/$file" 2>/dev/null || {
-                            error "Failed to backup $file"
-                        }
+                        handle_symlink_conflicts "$file" "$backup_dir"
                     fi
                 done
                 
-                log "Retrying checkout after backup..."
-                if dotfiles checkout; then
-                    success "Checkout successful after backing up conflicts"
+                log "Retrying checkout after handling conflicts..."
+                
+                # Try checkout again
+                set +e
+                checkout_output=$(dotfiles checkout 2>&1)
+                checkout_status=$?
+                set -e
+                
+                if [[ $checkout_status -eq 0 ]]; then
+                    success "Checkout successful after handling conflicts"
                 else
-                    error "Checkout still failing after backup"
-                    log "You may need to manually resolve conflicts"
-                    log "Check: dotfiles status"
-                    exit 1
+                    # If still failing, might need multiple passes for complex symlink chains
+                    warning "Still have conflicts, trying another pass..."
+                    
+                    # Extract remaining conflicts
+                    remaining_conflicts=$(echo "$checkout_output" | grep -E "^\s+" | sed 's/^[[:space:]]*//' | grep -v "^Please" | grep -v "^Aborting")
+                    
+                    if [[ -n "$remaining_conflicts" ]]; then
+                        echo "$remaining_conflicts" | while IFS= read -r file; do
+                            if [[ -n "$file" && -e "$HOME/$file" ]]; then
+                                handle_symlink_conflicts "$file" "$backup_dir"
+                            fi
+                        done
+                        
+                        # Final checkout attempt
+                        if dotfiles checkout; then
+                            success "Checkout successful after second pass"
+                        else
+                            error "Checkout still failing after handling symlinks"
+                            log "You may need to manually resolve conflicts"
+                            log "Check: dotfiles status"
+                            exit 1
+                        fi
+                    fi
                 fi
             else
                 error "Could not identify conflicting files"
