@@ -1,5 +1,6 @@
 alsa-utils
 at
+asdf-vm
 base
 base-devel
 bat
@@ -42,7 +43,7 @@ networkmanager
 noto-fonts-cjk
 noto-fonts-emoji
 ntfs-3g
-nvim-git
+neovim-git
 os-prober
 pavucontrol
 pulseaudio
