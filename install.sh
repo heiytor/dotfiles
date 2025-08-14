@@ -55,6 +55,16 @@ else
     success "Yay already installed"
 fi
 
+header "🖥️ Configuring Ly display manager"
+
+if ! systemctl is-enabled --quiet ly.service 2>/dev/null; then
+    log "Enabling Ly to start automatically..."
+    sudo systemctl enable ly.service
+    success "Ly enabled"
+else
+    success "Ly is already enabled"
+fi
+
 header "📂 Cloning dotfiles repository"
 
 dotfiles() {
