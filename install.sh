@@ -218,7 +218,7 @@ header "🐚 Installing Oh My Zsh and plugins"
 
 if [[ ! -d "$HOME/.oh-my-zsh" ]]; then
     log "Installing Oh My Zsh..."
-    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended --keep-zshrc
     success "Oh My Zsh installed"
 else
     success "Oh My Zsh already installed"
