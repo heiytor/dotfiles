@@ -12,7 +12,7 @@
         "custom/notifications",
         "pulseaudio",
         "battery",
-        "hyprland/language",
+        "custom/language",
         "clock"
     ],
     // Modules configuration
@@ -35,9 +35,12 @@
             "*": 9
         }
     },
-    "hyprland/language": {
-        "format-pt": "br",
-        "format-en": "en"
+    "custom/language": {
+        "format": "{}",
+        "exec": "hyprctl devices -j | jq -r '.keyboards[] | select(.main == true) | .active_keymap' | head -1 | sed 's/Portuguese (Brazil)/br/' | sed 's/English (US)/en/'",
+        "on-click": "hyprctl switchxkblayout current next",
+        "interval": 1,
+        "tooltip": false
     },
     "tray": {
         "spacing": 10
