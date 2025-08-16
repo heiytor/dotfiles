@@ -21,25 +21,25 @@ return {
 		opts = {
 			automatic_installation = true,
 			ensure_installed = {
-				"lua_ls",
-				-- "stylua",
-
-				"gopls",
-				-- "gofumpt",
-				-- "goimports",
-
-				"jsonls",
-
-				"bashls",
-
-				"dockerls",
-				"docker_compose_language_service",
-
-				"yamlls",
-				-- "yamlfmt",
-
-				"ruby_lsp",
-				"rubocop",
+				-- "lua_ls",
+				-- -- "stylua",
+				--
+				-- "gopls",
+				-- -- "gofumpt",
+				-- -- "goimports",
+				--
+				-- "jsonls",
+				--
+				-- "bashls",
+				--
+				-- "dockerls",
+				-- "docker_compose_language_service",
+				--
+				-- "yamlls",
+				-- -- "yamlfmt",
+				--
+				-- "ruby_lsp",
+				-- "rubocop",
 			},
 			handlers = {
 				function(server_name) -- default handler

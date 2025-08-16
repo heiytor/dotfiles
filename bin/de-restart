@@ -4,6 +4,8 @@ de-restart-app-waybar
 de-restart-app-swayosd
 de-restart-app-background
 de-restart-app-walker
+pkill -USR1 kitty
+pkill -USR1 nvim
 makoctl reload
 hyprctl reload
 

@@ -30,6 +30,7 @@ if [[ ! -d "$THEME_PATH" ]]; then
 fi
 
 rm -rf "$THEMES_CURRENT_DIR"
+
 ln -nsf "$THEME_PATH" "$THEMES_CURRENT_DIR"
 
 # if [[ -f "$theme_dir/light.mode" ]]; then
