@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+
+de-restart-app swaybg -i ~/.config/hypr/background.jpg -m fill
+

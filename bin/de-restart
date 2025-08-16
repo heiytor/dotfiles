@@ -1,0 +1,6 @@
+#!/usr/bin/env sh
+
+de-restart-app-waybar
+de-restart-app-background
+makoctl reload
+hyprctl reload
