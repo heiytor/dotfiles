@@ -1,0 +1,7 @@
+close_when_open      = true
+hotreload_theme      = true
+force_keyboard_focus = true
+theme_base           = []
+theme_location       = ["~/.config/walker/themes/"]
+theme                = "de"
+

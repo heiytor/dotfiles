@@ -244,7 +244,20 @@ log "Setting Zsh as default shell..."
 sudo usermod -s "$(which zsh)" "$USER"
 success "Zsh set as default shell"
 
+header "🎨 Configurando tema atual"
+
+THEMES_DIR="$HOME/themes"
+THEMES_CURRENT_DIR="$THEMES_DIR/current"
+DEFAULT_THEME="simple-dark"
+
+rm -rf "$THEMES_CURRENT_DIR"
+ln -nsf "$THEMES_DIR/$DEFAULT_THEME" "$THEMES_CURRENT_DIR"
+echo "$DEFAULT_THEME" > "$THEMES_CURRENT_DIR/name.txt"
+
+success "Default theme applied: $DEFAULT_THEME"
+
 header "🎉 Finalizing setup"
+
 
 success "Installation completed successfully!"
 

@@ -1,0 +1,13 @@
+@define-color bg_primary #1a1a1a;
+@define-color bg_hover rgba(255, 255, 255, 0.05);
+@define-color bg_hover_subtle rgba(255, 255, 255, 0.03);
+
+@define-color text_primary #e0e0e0;
+@define-color text_secondary #808080;
+@define-color text_active #ffffff;
+@define-color text_muted #a0a0a0;
+@define-color text_language #b0b0b0;
+
+@define-color accent_urgent #ff6b6b;
+@define-color accent_success #90ee90;
+@define-color accent_audio #87ceeb;

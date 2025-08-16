@@ -1,0 +1,12 @@
+@define-color bg_primary #1a1a1a;
+@define-color bg_secondary #2a2a2a;
+
+@define-color border_primary #404040;
+
+@define-color text_primary #e0e0e0;
+@define-color icon_default #808080;
+
+@define-color progress_bar #e0e0e0;
+@define-color progress_background #2a2a2a;
+
+@define-color accent_audio #87ceeb;

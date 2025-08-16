@@ -1,0 +1,3 @@
+#!/usr/bin/env sh
+
+de-restart-app walker --gapplication-service

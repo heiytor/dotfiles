@@ -3,5 +3,10 @@
 de-restart-app-waybar
 de-restart-app-swayosd
 de-restart-app-background
+de-restart-app-walker
 makoctl reload
 hyprctl reload
+
+if [ "$1" = "notify" ]; then
+    notify-send "DE restarted"
+fi

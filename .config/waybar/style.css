@@ -1,3 +1,5 @@
+@import "../../themes/current/waybar.css";
+
 * {
     font-family: "Terminus", "Font Awesome 6 Free", monospace;
     font-size: 14px;
@@ -5,8 +7,8 @@
 }
 
 window#waybar {
-    background-color: #1a1a1a;
-    color: #e0e0e0;
+    background-color: @bg_primary;
+    color: @text_primary;
 }
 
 /* Remove all button borders and shadows */
@@ -20,7 +22,7 @@ button {
 }
 
 button:hover {
-    background: rgba(255, 255, 255, 0.05);
+    background: @bg_hover;
 }
 
 /* Workspaces */
@@ -29,27 +31,27 @@ button:hover {
 }
 
 #workspaces button {
-    color: #808080;
+    color: @text_secondary;
     padding: 0 8px;
     margin: 0 2px;
 }
 
 #workspaces button:hover {
-    color: #e0e0e0;
-    background: rgba(255, 255, 255, 0.05);
+    color: @text_primary;
+    background: @bg_hover;
 }
 
 #workspaces button.active {
-    color: #ffffff;
+    color: @text_active;
 }
 
 #workspaces button.urgent {
-    color: #ff6b6b;
+    color: @accent_urgent;
 }
 
 /* Window title */
 #window {
-    color: #808080;
+    color: @text_secondary;
     margin: 0 8px;
 }
 
@@ -68,43 +70,43 @@ button:hover {
 #idle_inhibitor,
 #language {
     background: transparent;
-    color: #e0e0e0;
+    color: @text_primary;
     padding: 0 8px;
     margin: 0 2px;
 }
 
 /* Clock */
 #clock {
-    color: #ffffff;
+    color: @text_active;
 }
 
 /* Battery */
 #battery {
-    color: #a0a0a0;
+    color: @text_muted;
 }
 
 #battery.charging,
 #battery.plugged {
-    color: #90ee90;
+    color: @accent_success;
 }
 
 #battery.critical:not(.charging) {
-    color: #ff6b6b;
+    color: @accent_urgent;
 }
 
 /* Backlight */
 #backlight {
-    color: #e0e0e0;
+    color: @text_primary;
 }
 
 /* Audio */
 #pulseaudio {
-    color: #87ceeb;
+    color: @accent_audio;
 }
 
 /* Language */
 #language {
-    color: #b0b0b0;
+    color: @text_language;
     padding: 0 6px;
 }
 
@@ -133,5 +135,5 @@ button:hover {
 #battery:hover,
 #clock:hover,
 #language:hover {
-    background: rgba(255, 255, 255, 0.03);
+    background: @bg_hover_subtle;
 }

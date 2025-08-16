@@ -1,0 +1,17 @@
+@define-color bg_primary #f5f5f5;
+@define-color bg_secondary #eaeaea;
+
+@define-color border_primary #cccccc;
+@define-color border_focus #999999;
+
+@define-color text_primary #1a1a1a;
+@define-color text_secondary #606060;
+@define-color text_active #000000;
+@define-color text_disabled #a0a0a0;
+
+@define-color input_bg #ffffff;
+@define-color selection_bg #e0e0e0;
+
+@define-color scrollbar_track #f5f5f5;
+@define-color scrollbar_thumb #cccccc;
+@define-color scrollbar_thumb_hover #999999;
