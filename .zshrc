@@ -7,22 +7,25 @@ DISABLE_UNTRACKED_FILES_DIRTY="true"
 zstyle ':omz:update' mode auto
 
 plugins=(
-	command-not-found
-	copyfile
-	docker
-	docker-compose
-	sudo
-	zsh-syntax-highlighting
-	zsh-autosuggestions
+    command-not-found
+    copyfile
+    docker
+    docker-compose
+    sudo
+    zoxide
+    zsh-syntax-highlighting
+    zsh-autosuggestions
 )
 
 source $ZSH/oh-my-zsh.sh
 
 if [[ -n $SSH_CONNECTION ]]; then
-  export EDITOR='vim'
+    export EDITOR='vim'
 else
-  export EDITOR='nvim'
+    export EDITOR='nvim'
 fi
+
+export SUDO_EDITOR="$EDITOR"
 
 # export PATH="$HOME/bin:$PATH"
 
@@ -43,10 +46,21 @@ fi
 # see: https://wiki.archlinux.org/title/Dotfiles
 alias dotfiles='GIT_SSH_COMMAND="ssh -i ~/.ssh/std_ed25519" /usr/bin/git --git-dir="$HOME/.dotfiles/" --work-tree="$HOME"'
 
+v() {
+    if [ "$#" -eq 0 ]; then
+        "$EDITOR" .
+    else
+        "$EDITOR" "$@"
+    fi
+}
+
+if command -v zoxide &> /dev/null; then
+    alias cd="z"
+fi
+
 alias clear="printf '\033[2J\033[3J\033[H'" # Make clear also clear the scrollback buffer
 alias c="clear"
 alias reload="omz reload"
-alias v="$EDITOR"
 alias g="git"
 alias tb="nc termbin.com 9999"
 alias ls="exa --icons=always --git"
