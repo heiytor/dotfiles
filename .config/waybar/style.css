@@ -1,0 +1,137 @@
+* {
+    font-family: "Terminus", "Font Awesome 6 Free", monospace;
+    font-size: 14px;
+    min-height: 0;
+}
+
+window#waybar {
+    background-color: #1a1a1a;
+    color: #e0e0e0;
+}
+
+/* Remove all button borders and shadows */
+button {
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    background: transparent;
+    padding: 0;
+    margin: 0;
+}
+
+button:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* Workspaces */
+#workspaces {
+    margin: 0 8px;
+}
+
+#workspaces button {
+    color: #808080;
+    padding: 0 8px;
+    margin: 0 2px;
+}
+
+#workspaces button:hover {
+    color: #e0e0e0;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+#workspaces button.active {
+    color: #ffffff;
+}
+
+#workspaces button.urgent {
+    color: #ff6b6b;
+}
+
+/* Window title */
+#window {
+    color: #808080;
+    margin: 0 8px;
+}
+
+/* All modules default styling */
+#clock,
+#battery,
+#cpu,
+#memory,
+#disk,
+#temperature,
+#backlight,
+#network,
+#pulseaudio,
+#tray,
+#mode,
+#idle_inhibitor,
+#language {
+    background: transparent;
+    color: #e0e0e0;
+    padding: 0 8px;
+    margin: 0 2px;
+}
+
+/* Clock */
+#clock {
+    color: #ffffff;
+}
+
+/* Battery */
+#battery {
+    color: #a0a0a0;
+}
+
+#battery.charging,
+#battery.plugged {
+    color: #90ee90;
+}
+
+#battery.critical:not(.charging) {
+    color: #ff6b6b;
+}
+
+/* Backlight */
+#backlight {
+    color: #e0e0e0;
+}
+
+/* Audio */
+#pulseaudio {
+    color: #87ceeb;
+}
+
+/* Language */
+#language {
+    color: #b0b0b0;
+    padding: 0 6px;
+}
+
+/* Tray */
+#tray {
+    margin: 0 4px;
+}
+
+#tray > .passive {
+    -gtk-icon-effect: dim;
+}
+
+#tray > .needs-attention {
+    -gtk-icon-effect: highlight;
+}
+
+/* Remove any remaining module backgrounds */
+.modules-left,
+.modules-center,
+.modules-right {
+    background: transparent;
+}
+
+/* Subtle hover effect for interactive modules */
+#pulseaudio:hover,
+#battery:hover,
+#clock:hover,
+#language:hover {
+    background: rgba(255, 255, 255, 0.03);
+}

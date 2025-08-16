@@ -177,6 +177,8 @@ if [[ "$needs_checkout" == true ]]; then
     fi
 fi
 
+sudo usermod -aG input "$USER"
+
 log "Configuring dotfiles repository..."
 dotfiles config --local status.showUntrackedFiles no
 success "Dotfiles repository configured"

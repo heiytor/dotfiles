@@ -1,0 +1,110 @@
+{
+    "height": 30,
+    "spacing": 4,
+    "modules-left": [
+        "hyprland/workspaces",
+        "hyprland/window"
+    ],
+    "modules-center": [],
+    "modules-right": [
+        "tray",
+        "backlight",
+        "custom/notifications",
+        "pulseaudio",
+        "battery",
+        "hyprland/language",
+        "clock"
+    ],
+    // Modules configuration
+    "hyprland/workspaces": {
+        "show-special": false,
+        "format": "{icon}",
+        "format-icons": {
+            "1": "1",
+            "2": "2",
+            "3": "3",
+            "4": "4",
+            "5": "5",
+            "6": "6",
+            "7": "7",
+            "8": "8",
+            "9": "9",
+            "active": "󱓻"
+        },
+        "persistent-workspaces": {
+            "*": 9
+        }
+    },
+    "hyprland/language": {
+        "format-pt": "br",
+        "format-en": "en"
+    },
+    "tray": {
+        "spacing": 10
+    },
+    "clock": {
+        "interval": 5,
+        "format": "{:%a %b %d, %H:%M}",
+        "tooltip": true,
+        "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
+    },
+    "backlight": {
+        "tooltip": false,
+        "format": "{icon}",
+        "format-icons": [
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+        ]
+    },
+    "battery": {
+        "tooltip": true,
+        "tooltip-format": "{capacity}%, {timeTo}",
+        "format": "{icon}",
+        "format-full": "{icon}",
+        "format-charging": "",
+        "format-plugged": "",
+        "states": {
+            "warning": 30,
+            "critical": 15
+        },
+        "format-icons": [
+            "",
+            "",
+            "",
+            "",
+            ""
+        ]
+    },
+    "pulseaudio": {
+        "on-click": "swayosd-client --monitor \"$(hyprctl monitors -j | jq -r '.[] | select(.focused == true).name')\" --output-volume mute-toggle",
+        "on-click-middle": "pavucontrol",
+        "on-click-right": "swayosd-client --monitor \"$(hyprctl monitors -j | jq -r '.[] | select(.focused == true).name')\" --input-volume mute-toggle",
+        "on-scroll-up": "swayosd-client --monitor \"$(hyprctl monitors -j | jq -r '.[] | select(.focused == true).name')\" --output-volume raise",
+        "on-scroll-down": "swayosd-client --monitor \"$(hyprctl monitors -j | jq -r '.[] | select(.focused == true).name')\" --output-volume lower",
+        "format-source": "",
+        "format-source-muted": "",
+        "format": "{icon} {format_source}",
+        "format-muted": " {format_source}",
+        "format-icons": {
+            "default": [
+                "",
+                "",
+                ""
+            ]
+        }
+    },
+    "custom/notifications": {
+        "tooltip": false,
+        "format": "{}",
+        "exec": "de-notification-status",
+        "on-click": "de-notification-toggle",
+        "interval": 1
+    }
+}

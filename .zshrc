@@ -24,7 +24,7 @@ else
   export EDITOR='nvim'
 fi
 
-export PATH="$HOME/bin:$PATH"
+# export PATH="$HOME/bin:$PATH"
 
 # ASDF setup
 if [ -f "$HOME/bin/asdf" ]; then
