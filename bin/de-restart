@@ -6,6 +6,7 @@ de-restart-app-background
 de-restart-app-walker
 pkill -USR1 kitty
 pkill -USR1 nvim
+# killall -SIGUSR1 gtk-update-icon-cache 2>/dev/null || true
 makoctl reload
 hyprctl reload
 

@@ -33,21 +33,19 @@ rm -rf "$THEMES_CURRENT_DIR"
 
 ln -nsf "$THEME_PATH" "$THEMES_CURRENT_DIR"
 
-# if [[ -f "$theme_dir/light.mode" ]]; then
-#   echo "Applying light theme..."
-#   gsettings set org.gnome.desktop.interface color-scheme "prefer-light"
-#   gsettings set org.gnome.desktop.interface gtk-theme "Adwaita"
-# else
-#   echo "Applying dark theme..."
-#   gsettings set org.gnome.desktop.interface color-scheme "prefer-dark"
-#   gsettings set org.gnome.desktop.interface gtk-theme "Adwaita-dark"
-# fi
-
-# if [[ -f "$theme_dir/icons.theme" ]]; then
-#   local icon_theme="$(<$theme_dir/icons.theme)"
-#   gsettings set org.gnome.desktop.interface icon-theme "$icon_theme"
-#   echo "Set icon theme: $icon_theme"
-# fi
+mode=$(de-theme-get mode 2>/dev/null || echo "dark")
+if [[ "$mode" == "light" ]]; then
+    echo "Applying light theme..."
+    gsettings set org.gnome.desktop.interface color-scheme "prefer-light"
+    gsettings set org.gnome.desktop.interface gtk-theme "Adwaita"
+elif [[ "$mode" == "dark" ]]; then
+    echo "Applying dark theme..."
+    gsettings set org.gnome.desktop.interface color-scheme "prefer-dark"
+    gsettings set org.gnome.desktop.interface gtk-theme "Adwaita-dark"
+else
+    echo "Unknown mode '$mode', defaulting to dark theme..."
+    gsettings set org.gnome.desktop.interface color-scheme "prefer-dark"
+    gsettings set org.gnome.desktop.interface gtk-theme "Adwaita-dark"
+fi
 
 de-restart
-echo "$THEME_NAME" > "$THEMES_DIR/current/name.txt"

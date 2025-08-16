@@ -1,16 +1,7 @@
 #!/usr/bin/env sh
 
-THEMES_DIR="$HOME/themes"
-THEMES_CURRENT_DIR="$THEMES_DIR/current"
-CURRENT_FILE="$THEMES_CURRENT_DIR/name.txt"
-
-if [ -f "$CURRENT_FILE" ]; then
-    CURRENT_THEME=$(<"$CURRENT_FILE")
-else
-    CURRENT_THEME=""
-fi
-
-THEMES=$(ls -1 "$THEMES_DIR" | grep -v '^current$' | sort)
+THEMES=$(ls -1 "$HOME/themes" | grep -v '^current$' | sort)
+CURRENT_THEME=$(de-theme-get name 2>/dev/null || echo "")
 
 NEXT_THEME=""
 FOUND_CURRENT=0
