@@ -55,16 +55,6 @@ else
     success "Yay already installed"
 fi
 
-header "🖥️ Configuring Ly display manager"
-
-if ! systemctl is-enabled --quiet ly.service 2>/dev/null; then
-    log "Enabling Ly to start automatically..."
-    sudo systemctl enable ly.service
-    success "Ly enabled"
-else
-    success "Ly is already enabled"
-fi
-
 header "📂 Cloning dotfiles repository"
 
 dotfiles() {
@@ -194,6 +184,16 @@ if [[ -f "$HOME/.ensure-installed" ]]; then
 else
     error ".ensure-installed file not found in dotfiles"
     exit 1
+fi
+
+header "🖥️ Configuring Ly display manager"
+
+if ! systemctl is-enabled --quiet ly.service 2>/dev/null; then
+    log "Enabling Ly to start automatically..."
+    sudo systemctl enable ly.service
+    success "Ly enabled"
+else
+    success "Ly is already enabled"
 fi
 
 header "⚡ Setting up Neovim packages"
