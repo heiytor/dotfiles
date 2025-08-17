@@ -88,9 +88,9 @@
         ]
     },
     "pulseaudio": {
-        "on-click": "swayosd-client --monitor \"$(hyprctl monitors -j | jq -r '.[] | select(.focused == true).name')\" --output-volume mute-toggle",
+        "on-click": "de-audio-toggle notify",
         "on-click-middle": "pavucontrol",
-        "on-click-right": "swayosd-client --monitor \"$(hyprctl monitors -j | jq -r '.[] | select(.focused == true).name')\" --input-volume mute-toggle",
+        "on-click-right": "de-mic-toggle notify",
         "on-scroll-up": "swayosd-client --monitor \"$(hyprctl monitors -j | jq -r '.[] | select(.focused == true).name')\" --output-volume raise",
         "on-scroll-down": "swayosd-client --monitor \"$(hyprctl monitors -j | jq -r '.[] | select(.focused == true).name')\" --output-volume lower",
         "format-source": "",
