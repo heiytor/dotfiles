@@ -1,3 +1,25 @@
 #!/usr/bin/env sh
 
-echo "$(hyprctl getoption general:layout -j | jq -r '.str' | cut -c1)"
+STATE_DIR="/run/user/$UID/hyprland"
+WORKSPACE_ID=$(hyprctl activeworkspace -j | jq -r '.id')
+ORIENTATION_FILE="$STATE_DIR/master_orientation_ws${WORKSPACE_ID}"
+
+layout=$(hyprctl getoption general:layout -j | jq -r '.str')
+
+if [[ -f "$ORIENTATION_FILE" ]]; then
+   orientation=$(cat "$ORIENTATION_FILE")
+else
+   orientation="left"
+fi
+
+case "$1" in
+   "layout")
+       echo "${layout:0:1}"
+       ;;
+   "orientation")
+       echo "${orientation:0:1}"
+       ;;
+   *)
+       echo "${layout:0:1}:${orientation:0:1}"
+       ;;
+esac

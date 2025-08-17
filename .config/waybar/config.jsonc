@@ -122,6 +122,7 @@
         "tooltip": false,
         "format": "{}",
         "exec": "de-layout-get",
+        "on-click": "de-layout-orientation-cycle",
         "interval": 1
     }
 }
