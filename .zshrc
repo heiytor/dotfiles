@@ -12,7 +12,6 @@ plugins=(
     docker
     docker-compose
     sudo
-    zoxide
     zsh-syntax-highlighting
     zsh-autosuggestions
 )
@@ -34,22 +33,10 @@ if [ -f "$HOME/bin/asdf" ]; then
     fi
 
     export PATH="${ASDF_DATA_DIR:-$HOME/.asdf}/shims:$PATH"
-
     fpath=(${ASDF_DATA_DIR:-$HOME/.asdf}/completions $fpath)
-    autoload -Uz compinit && compinit
 fi
 
-v() {
-    if [ "$#" -eq 0 ]; then
-        "$EDITOR" .
-    else
-        "$EDITOR" "$@"
-    fi
-}
-
-if command -v zoxide &> /dev/null; then
-    alias cd="z"
-fi
+autoload -Uz compinit && compinit
 
 alias clear="printf '\033[2J\033[3J\033[H'" # Make clear also clear the scrollback buffer
 alias c="clear"
@@ -60,3 +47,7 @@ alias ls="exa --icons=always --git"
 alias ll="exa --icons=always --git -l"
 alias cat="bat"
 alias ssh="TERM=xterm ssh"
+alias ssh="TERM=xterm ssh" # Force xterm compatibility for better SSH sessions
+
+if command -v zoxide &> /dev/null; then eval "$(zoxide init zsh)"; fi # Initialize zoxide for smart directory jumping
+v() { [ "$#" -eq 0 ] && "$EDITOR" . || "$EDITOR" "$@"; } # Open editor in current dir or with specified files
