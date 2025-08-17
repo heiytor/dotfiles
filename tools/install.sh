@@ -75,36 +75,12 @@ dotfiles() {
 }
 
 log "Checking out dotfiles..."
+
 checkout_output=$(dotfiles checkout 2>&1)
 checkout_code=$?
 
 if (( checkout_code == 0 )); then
     success "Dotfiles checked out successfully"
-elif echo "$checkout_output" | grep -q "would be overwritten"; then
-    warning "Conflicting files found. Backing up..."
-    
-    backup_dir="$HOME/.backup/$(date +%Y%m%d_%H%M%S)"
-    mkdir -p "$backup_dir"
-    
-    mapfile -t conflicting_files < <(
-        echo "$checkout_output" | grep -E "^\s+" | sed 's/^[[:space:]]*//' | grep -vE "^(Please|Aborting)"
-    )
-    
-    if (( ${#conflicting_files[@]} > 0 )); then
-        for file in "${conflicting_files[@]}"; do
-            if [[ -e "$HOME/$file" || -L "$HOME/$file" ]]; then
-                mkdir -p "$backup_dir/$(dirname "$file")"
-                mv "$HOME/$file" "$backup_dir/$file" 2>/dev/null || {
-                    error "Failed to backup $file"
-                    exit 1
-                }
-            fi
-        done
-        
-        # Try checkout again after backing up
-        dotfiles checkout
-        success "Dotfiles checked out after backing up conflicts"
-    fi
 else
     error "Checkout failed:"
     echo "$checkout_output"
@@ -115,16 +91,10 @@ log "Configuring dotfiles repository..."
 dotfiles config --local status.showUntrackedFiles no
 success "Dotfiles repository configured"
 
-# Now we can load the modules from the checked out dotfiles
 log "Loading modules..."
 source "$HOME/tools/modules/asdf.sh"
 source "$HOME/tools/modules/logger.sh"
-source "$HOME/tools/modules/omz.sh"
 source "$HOME/tools/modules/packages.sh"
-source "$HOME/tools/modules/theme.sh"
-
-# Add user to input group
-sudo usermod -aG input "$USER"
 
 header "📦 Installing essential packages"
 
@@ -200,13 +170,12 @@ else
     warning ".tool-versions file not found, skipping asdf plugins"
 fi
 
-header "🎨 Configuring theme"
+header "🎨 Configuring default theme"
 
-if apply_theme "simple-dark"; then
-    success "Default theme applied: simple-dark"
-else
-    warning "Failed to apply default theme"
-fi
+rm -rf "$HOME/themes/current"
+ln -nsf "$HOME/themes/simple-dark" "$HOME/themes/current"
+
+success "Default theme applied: simple-dark"
 
 header "🎉 Finalizing setup"
 
@@ -215,13 +184,6 @@ success "Installation completed successfully!"
 echo
 header "📋 Post-installation notes"
 warning "Please reboot your system to ensure all changes take effect"
-log "After reboot:"
-log "  • Docker group changes will be active"
-log "  • Zsh will be your default shell"
-log "  • All dotfiles configurations will be loaded"
-echo
-log "To manage your dotfiles, use: dotfiles <git-command>"
-log "Example: dotfiles status, dotfiles add, dotfiles commit, etc."
 echo
 success "Enjoy your new setup! 🚀"
 

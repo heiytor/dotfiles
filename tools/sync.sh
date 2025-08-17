@@ -21,44 +21,21 @@ if [[ $EUID -eq 0 ]]; then
     exit 1
 fi
 
-header "🔄 Syncing Dotfiles Configuration"
-log "Updating your system with latest dotfiles changes"
-
-header "📂 Fetching latest dotfiles"
-
 if [[ ! -d "$HOME/.dotfiles" ]]; then
     error "Dotfiles repository not found. Please run install.sh first"
     exit 1
 fi
 
-log "Checking for remote updates..."
-dotfiles fetch origin
+header "📂 Syncing dotfiles"
 
-LOCAL=$(dotfiles rev-parse HEAD)
-REMOTE=$(safe dotfiles rev-parse "@{u}" 2>/dev/null || echo "")
+log "Pulling latest changes..."
+DOTFILES_PULL_OUTPUT=$(dotfiles pull origin main 2>&1)
 
-if [[ -z "$REMOTE" ]]; then
-    error "Could not find remote branch. Please check your repository setup"
-    exit 1
-fi
-
-dotfiles_updated=false
-if [[ "$LOCAL" == "$REMOTE" ]]; then
+if echo "$DOTFILES_PULL_OUTPUT" | grep -q "Already up to date"; then
     success "Dotfiles are already up to date"
+    dotfiles_updated=false
 else
-    warning "Updates available from remote repository"
-
-    if [[ -n "$(dotfiles status --porcelain)" ]]; then
-        error "You have uncommitted local changes"
-        log "Please commit or stash your changes first"
-        dotfiles status --short
-        exit 1
-    fi
-
-    log "Pulling latest changes..."
-    dotfiles pull origin main
-    success "Dotfiles updated and applied successfully"
-
+    warning "Updates pulled from remote repository"
     dotfiles_updated=true
 fi
 

@@ -1,0 +1,42 @@
+#!/usr/bin/env sh
+
+get_terminal_cwd() {
+  local parent_pid=$1
+  local shell_pid
+  shell_pid=$(pgrep --parent "$parent_pid")
+  if [ -n "$shell_pid" ]; then
+    readlink -f "/proc/$shell_pid/cwd" 2>/dev/null
+  fi
+}
+
+main() {
+  local final_cwd="$HOME"
+  local found_path
+  
+  local active_window_info
+  active_window_info=$(hyprctl activewindow)
+  
+  local active_class
+  active_class=$(echo "$active_window_info" | grep 'class:' | awk '{print $2}')
+  
+  local _pid
+  _pid=$(echo "$active_window_info" | grep 'pid:' | awk '{print $2}')
+  
+  local active_title
+  active_title=$(echo "$active_window_info" | grep "title:" | cut -d: -f2- | sed 's/^ *//')
+  if [ -n "$active_class" ]; then
+    case "$active_class" in
+      kitty|Alacritty|Gnome-terminal|foot|wezterm)
+        found_path=$(get_terminal_cwd "$_pid")
+        ;;
+    esac
+  fi
+
+  if [ -n "$found_path" ]; then
+    final_cwd="$found_path"
+  fi
+
+  echo "$final_cwd"
+}
+
+main "$@"
