@@ -1,0 +1,3 @@
+#!/usr/bin/env sh
+
+echo "$(hyprctl getoption general:layout -j | jq -r '.str' | cut -c1)"
