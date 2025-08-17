@@ -1,3 +1,11 @@
 #!/usr/bin/env sh
 
-makoctl mode -t do-not-disturb
+mode=$(makoctl mode -t do-not-disturb)
+
+if [ "$1" = "notify" ]; then
+    if echo "$mode" | grep -q "do-not-disturb"; then
+        notify-send "Do not disturb enabled"
+    else
+        notify-send "Do not disturb disabled"
+    fi
+fi

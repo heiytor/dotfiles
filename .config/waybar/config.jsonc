@@ -109,7 +109,7 @@
         "tooltip": false,
         "format": "{}",
         "exec": "de-notification-status",
-        "on-click": "de-notification-toggle",
+        "on-click": "de-notification-toggle notify",
         "interval": 1
     },
     "custom/theme-selector": {
