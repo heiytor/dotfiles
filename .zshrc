@@ -49,5 +49,5 @@ alias cat="bat"
 alias ssh="TERM=xterm ssh"
 alias ssh="TERM=xterm ssh" # Force xterm compatibility for better SSH sessions
 
-if command -v zoxide &> /dev/null; then eval "$(zoxide init zsh)"; fi # Initialize zoxide for smart directory jumping
+if command -v zoxide &> /dev/null; then eval "$(zoxide init --cmd cd zsh)"; fi # Initialize zoxide for smart directory jumping
 v() { [ "$#" -eq 0 ] && "$EDITOR" . || "$EDITOR" "$@"; } # Open editor in current dir or with specified files
