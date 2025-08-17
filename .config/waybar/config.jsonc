@@ -14,7 +14,8 @@
         "battery",
         "custom/theme-selector",
         "custom/language",
-        "clock"
+        "clock",
+        "custom/layout"
     ],
     // Modules configuration
     "hyprland/workspaces": {
@@ -116,5 +117,11 @@
         "format": "{}",
         "exec": "de-theme-get name",
         "on-click": "de-theme-cycle",
+    },
+    "custom/layout": {
+        "tooltip": false,
+        "format": "{}",
+        "exec": "de-layout-get",
+        "interval": 1
     }
 }
