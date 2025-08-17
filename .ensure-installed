@@ -29,6 +29,7 @@ grub
 hypridle
 hyprland
 hyprlock
+imv
 inotify-tools
 jq
 kitty
@@ -50,6 +51,7 @@ ntfs-3g
 os-prober
 otf-font-awesome
 pavucontrol
+pipewire
 pulseaudio
 qalculate-gtk
 qownnotes
@@ -67,11 +69,13 @@ ttf-font-awesome
 ttf-nerd-fonts-symbols-mono
 unzip
 uwsm
+vesktop-bin
 vim
 vlc
 walker-bin
 waybar
 wev
+wireplumber
 wireless_tools
 wl-clip-persist
 wl-clipboard
