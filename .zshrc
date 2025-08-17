@@ -27,9 +27,6 @@ fi
 
 export SUDO_EDITOR="$EDITOR"
 
-# export PATH="$HOME/bin:$PATH"
-
-# ASDF setup
 if [ -f "$HOME/bin/asdf" ]; then
     if [ ! -d "${ASDF_DATA_DIR:-$HOME/.asdf}/completions" ]; then
         mkdir -p "${ASDF_DATA_DIR:-$HOME/.asdf}/completions"
