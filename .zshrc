@@ -42,10 +42,6 @@ if [ -f "$HOME/bin/asdf" ]; then
     autoload -Uz compinit && compinit
 fi
 
-# Track dotfiles directly with git.
-# see: https://wiki.archlinux.org/title/Dotfiles
-alias dotfiles='GIT_SSH_COMMAND="ssh -i ~/.ssh/std_ed25519" /usr/bin/git --git-dir="$HOME/.dotfiles/" --work-tree="$HOME"'
-
 v() {
     if [ "$#" -eq 0 ]; then
         "$EDITOR" .
