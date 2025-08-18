@@ -1,12 +1,13 @@
 #!/usr/bin/env sh
 
 profile="$1"
-profiles=$(powerprofilesctl list 2>/dev/null | grep -E "^\s*\*?\s*(performance|balanced|power-saver):" | sed 's/^\s*\*\?\s*//' | sed 's/:.*$//' | sed 's/^/  - /')
 
 if [ -z "$profile" ]; then
     echo "Usage: $0 <performance|balanced|power-saver>"
     echo "Available profiles:"
-    echo "$profiles"
+    echo "  - performance"
+    echo "  - balanced"
+    echo "  - power-saver"
     exit 1
 fi
 
@@ -24,7 +25,9 @@ case "$profile" in
     *)
         echo "Error: Invalid profile '$profile'"
         echo "Valid profiles:"
-        echo "$profiles"
+        echo "  - performance"
+        echo "  - balanced"
+        echo "  - power-saver"
         exit 1
         ;;
 esac

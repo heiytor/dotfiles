@@ -119,7 +119,7 @@ button:hover {
 /* Audio */
 #pulseaudio {
     color: @accent_audio;
-    margin-right: -11px;
+    margin-right: -1px;
 }
 
 /* Language */
