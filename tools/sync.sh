@@ -58,7 +58,12 @@ fi
 header "🐚 Updating Oh My Zsh and plugins"
 
 log "Updating Oh My Zsh..."
-omz update > /dev/null 2>&1
+
+if [[ -f "$HOME/.oh-my-zsh/tools/upgrade.sh" ]]; then
+    "$HOME/.oh-my-zsh/tools/upgrade.sh" > /dev/null 2>&1
+else
+    warning "Oh My Zsh not found"
+fi
 
 log "Updating Zsh plugins..."
 if sync_zsh_pkgs; then

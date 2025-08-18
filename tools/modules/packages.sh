@@ -25,7 +25,7 @@ sync_nvim_pkgs() {
 }
 
 sync_zsh_pkgs() {
-    local omz_custom="${$HOME/.oh-my-zsh/custom}"
+    local omz_custom="$HOME/.oh-my-zsh/custom"
     local plugins_installed=0
     
     # Syntax highlighting
