@@ -32,6 +32,7 @@ hyprlock
 imv
 inotify-tools
 jq
+openbsd-netcat
 kitty
 less
 libyaml
