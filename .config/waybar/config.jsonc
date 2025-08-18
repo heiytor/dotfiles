@@ -39,8 +39,8 @@
     },
     "custom/language": {
         "format": "{}",
-        "exec": "hyprctl devices -j | jq -r '.keyboards[] | select(.main == true) | .active_keymap' | head -1 | sed 's/Portuguese (Brazil)/br/' | sed 's/English (US)/en/'",
-        "on-click": "hyprctl switchxkblayout current next",
+        "exec": "de-keyboard-layout-get",
+        "on-click": "de-keyboard-layout-cycle notify",
         "interval": 1,
         "tooltip": false
     },

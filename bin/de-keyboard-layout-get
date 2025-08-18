@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+
+if [ -f "$HOME/.de-session/keyboard_layout" ]; then
+    /bin/cat "$HOME/.de-session/keyboard_layout"
+else
+   hyprctl devices -j | jq -r '.keyboards[] | select(.main == true) | .active_keymap' | head -1 | sed 's/Portuguese (Brazil)/br/' | sed 's/English (US)/us/'
+fi
+
