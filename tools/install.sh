@@ -136,6 +136,24 @@ else
     success "Network wait service already disabled"
 fi
 
+log "Configuring systemd-resolved (Cloudflare DNS with Google fallback)..."
+if [[ -f "$HOME/.config/systemd/resolved.conf" ]]; then
+    log "Copying resolved.conf to system directory..."
+    sudo cp "$HOME/.config/systemd/resolved.conf" /etc/systemd/resolved.conf
+    
+    log "Restarting systemd-resolved..."
+    sudo systemctl restart systemd-resolved
+    
+    success "DNS configured: Cloudflare (1.1.1.1) with Google (8.8.8.8) fallback"
+else
+    warning "resolved.conf not found in dotfiles, skipping DNS configuration"
+fi
+
+log "Solving SSH flakiness with MTU probing..."
+echo "net.ipv4.tcp_mtu_probing=1" | sudo tee -a /etc/sysctl.d/99-sysctl.conf
+success "TCP MTU probing enabled"
+
+log "Optimizing power settings..."
 if ls /sys/class/power_supply/BAT* &>/dev/null; then
     success "Battery detected → Laptop/portable device"
     
