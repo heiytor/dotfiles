@@ -17,15 +17,6 @@ warning() { echo -e "${YELLOW}[!]${NC} $1"; }
 error() { echo -e "${RED}[✗]${NC} $1"; }
 header() { echo -e "\n${BOLD}${BLUE}━━━ $1 ━━━${NC}\n"; }
 
-# Helper function for safe command execution
-safe() {
-    set +e
-    "$@"
-    local status=$?
-    set -e
-    return $status
-}
-
 # Check if running as root
 if [[ $EUID -eq 0 ]]; then
    error "This script should not be run as root"
@@ -48,7 +39,7 @@ fi
 if ! command -v yay &> /dev/null; then
     log "Installing Yay AUR helper..."
     sudo pacman -S --noconfirm --needed base base-devel
-    cd /tm
+    cd /tmp
     git clone https://aur.archlinux.org/yay.git
     cd yay
     makepkg -si --noconfirm
@@ -133,6 +124,46 @@ if grep -q 0 /sys/block/*/queue/rotational 2>/dev/null; then
     success "fstrim.timer enabled for SSD optimization"
 else
     log "No non-rotational device detected → skipping fstrim.timer activation"
+fi
+
+log "Optimizing network boot behavior..."
+if systemctl is-enabled --quiet systemd-networkd-wait-online.service 2>/dev/null; then
+    log "Disabling systemd-networkd-wait-online.service for faster boot..."
+    sudo systemctl disable systemd-networkd-wait-online.service
+    sudo systemctl mask systemd-networkd-wait-online.service
+    success "Network wait service disabled (faster boot)"
+else
+    success "Network wait service already disabled"
+fi
+
+if ls /sys/class/power_supply/BAT* &>/dev/null; then
+    success "Battery detected → Laptop/portable device"
+    
+    log "Setting balanced power profile for battery life..."
+    if command -v powerprofilesctl &>/dev/null; then
+        if command -v powerprofilesctl &>/dev/null; then
+            if powerprofilesctl set balanced; then
+                success "Power profile set to balanced"
+            else
+                warning "Failed to set power profile"
+            fi
+        fi
+    fi
+    
+    log "Setting up battery monitoring..."
+    systemctl --user enable --now omarchy-battery-monitor.timer || true
+    success "Battery monitoring enabled"
+else
+    success "No battery detected → Desktop/workstation"
+    
+    log "Setting performance power profile for maximum performance..."
+    if command -v powerprofilesctl &>/dev/null; then
+        if powerprofilesctl set performance; then
+            success "Power profile set to performance"
+        else
+            warning "Failed to set power profile"
+        fi
+    fi
 fi
 
 header "🔥 Configuring UFW Firewall"
@@ -228,6 +259,7 @@ read -r -p "Would you like to reboot now? (y/N): " REPLY </dev/tty
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]; then
     log "Rebooting system..."
+    sleep 2
     sudo reboot
 else
     warning "Remember to reboot later to complete the setup!"

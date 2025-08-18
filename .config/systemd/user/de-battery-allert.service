@@ -1,0 +1,8 @@
+[Unit]
+Description=Battery Monitor
+After=graphical-session.target
+
+[Service]
+Type=oneshot
+ExecStart=%h/.config/systemd/user/de-battery-monitor
+Environment=DISPLAY=:0

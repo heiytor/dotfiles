@@ -52,6 +52,7 @@ os-prober
 otf-font-awesome
 pavucontrol
 pipewire
+power-profiles-daemon
 pulseaudio
 qalculate-gtk
 qownnotes
