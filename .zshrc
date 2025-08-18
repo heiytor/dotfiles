@@ -22,6 +22,10 @@ if [[ -n $SSH_CONNECTION ]]; then
     export EDITOR='vim'
 else
     export EDITOR='nvim'
+
+    if [ -z "$SSH_AUTH_SOCK" ]; then
+        eval "$(ssh-agent -s)" > /dev/null 2>&1
+    fi
 fi
 
 export SUDO_EDITOR="$EDITOR"
