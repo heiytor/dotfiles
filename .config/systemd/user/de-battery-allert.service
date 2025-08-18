@@ -1,5 +1,5 @@
 [Unit]
-Description=Battery Monitor
+Description=Battery Allert
 After=graphical-session.target
 
 [Service]

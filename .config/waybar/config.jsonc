@@ -12,6 +12,7 @@
         "custom/notifications",
         "pulseaudio",
         "battery",
+        "custom/powerprofile",
         "custom/theme-selector",
         "custom/language",
         "clock",
@@ -123,6 +124,13 @@
         "format": "{}",
         "exec": "de-layout-get",
         "on-click": "de-layout-orientation-cycle",
+        "interval": 1
+    },
+    "custom/powerprofile": {
+        "tooltip": false,
+        "format": "{}",
+        "exec": "de-powerprofile-get --short",
+        "on-click": "de-powerprofile-cycle notify",
         "interval": 1
     }
 }

@@ -1,6 +1,6 @@
 [Unit]
-Description=Battery Monitor Timer
-Requires=de-battery-monitor.service
+Description=Battery Allert Timer
+Requires=de-battery-allert.service
 
 [Timer]
 OnBootSec=1min

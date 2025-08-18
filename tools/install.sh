@@ -169,7 +169,7 @@ if ls /sys/class/power_supply/BAT* &>/dev/null; then
     fi
     
     log "Setting up battery monitoring..."
-    systemctl --user enable --now omarchy-battery-monitor.timer || true
+    systemctl --user enable --now de-battery-allert.timer || true
     success "Battery monitoring enabled"
 else
     success "No battery detected → Desktop/workstation"
@@ -237,7 +237,7 @@ else
 fi
 
 log "Installing Zsh plugins..."
-if install_zsh_pkgs; then
+if sync_zsh_pkgs; then
     success "Zsh plugins installed"
 else
     success "Zsh plugins already installed"

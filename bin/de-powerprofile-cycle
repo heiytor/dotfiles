@@ -1,0 +1,55 @@
+#!/usr/bin/env sh
+
+if ! command -v powerprofilesctl &> /dev/null; then
+    echo "Error: powerprofilesctl not found"
+    exit 1
+fi
+
+available_profiles=$(powerprofilesctl list 2>/dev/null | grep -E "^\s*\*?\s*(performance|balanced|power-saver):" | sed 's/^\s*\*\?\s*//' | sed 's/:.*$//')
+
+if [ -z "$available_profiles" ]; then
+    echo "Error: No profiles found"
+    exit 1
+fi
+
+current=$(powerprofilesctl get 2>/dev/null)
+if [ -z "$current" ]; then
+    echo "Error: Could not get current profile"
+    exit 1
+fi
+
+profile_list=""
+for profile in $available_profiles; do
+    profile_list="$profile_list $profile"
+done
+
+found_current=false
+next_profile=""
+first_profile=""
+
+for profile in $profile_list; do
+    if [ -z "$first_profile" ]; then
+        first_profile="$profile"
+    fi
+
+    if [ "$found_current" = true ]; then
+        next_profile="$profile"
+        break
+    fi
+
+    if [ "$profile" = "$current" ]; then
+        found_current=true
+    fi
+done
+
+if [ -z "$next_profile" ]; then
+    next_profile="$first_profile"
+fi
+if powerprofilesctl set "$next_profile"; then
+    if [ "$1" = "notify" ]; then
+        notify-send "Power Profile" "Changed: $current → $next_profile"
+    fi
+else
+    notify-send "Power Profile" "Failed to change"
+    exit 1
+fi

@@ -11,7 +11,15 @@
 }
 
 #custom-language {
-    margin-left: 8px; /* Extra gap before language */
+   margin-left: 8px; /* Extra gap before language */
+}
+
+#custom-powerprofile {
+   margin-right: 0px; /* Reduce gap between battery and powerprofile */
+}
+
+#custom-theme-selector {
+   margin-left: 8px; /* Increase gap between powerprofile and theme */
 }
 
 window#waybar {
@@ -91,6 +99,7 @@ button:hover {
 /* Battery */
 #battery {
     color: @text_muted;
+    margin-right: 0px;
 }
 
 #battery.charging,
@@ -110,6 +119,7 @@ button:hover {
 /* Audio */
 #pulseaudio {
     color: @accent_audio;
+    margin-right: -11px;
 }
 
 /* Language */

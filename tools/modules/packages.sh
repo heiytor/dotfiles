@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Install ans sync packages from .ensure-installed file
- sync_system_pkgs() {
+sync_system_pkgs() {
     local ensure_file="${1:-$HOME/.ensure-installed}"
     
     if [[ -f "$ensure_file" ]]; then
