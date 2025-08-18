@@ -135,6 +135,42 @@ else
     log "No non-rotational device detected → skipping fstrim.timer activation"
 fi
 
+header "🔥 Configuring UFW Firewall"
+
+log "Setting default policies..."
+sudo ufw --force default deny incoming
+success "Default deny incoming configured"
+
+sudo ufw --force default allow outgoing
+success "Default allow outgoing configured"
+
+log "Allowing SSH access (port 22/tcp)..."
+sudo ufw allow 22/tcp
+success "SSH access allowed"
+
+log "Allowing LocalSend ports (53317/tcp and 53317/udp)..."
+sudo ufw allow 53317/tcp
+sudo ufw allow 53317/udp
+success "LocalSend ports allowed"
+
+log "Allowing Docker DNS resolution..."
+sudo ufw allow in on docker0 to any port 53
+success "Docker DNS resolution allowed"
+
+log "Enabling firewall..."
+sudo ufw --force enable
+success "UFW firewall enabled"
+
+log "Installing Docker-specific UFW protections..."
+sudo ufw-docker install
+success "UFW-Docker protections installed"
+
+log "Reloading firewall rules..."
+sudo ufw reload
+success "Firewall rules reloaded"
+
+success "Firewall configuration completed"
+
 header "⚡ Setting up Neovim packages"
 
 if sync_nvim_pkgs; then
