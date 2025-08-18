@@ -1,0 +1,2 @@
+.de-session/**
+!.de-session/.keep

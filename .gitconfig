@@ -1,3 +1,6 @@
 [user]
 	email = heitor.danilo@icloud.com
 	name = Heitor Danilo
+
+[core]
+    excludesfile = .config/.de-gitignore
