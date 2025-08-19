@@ -11,6 +11,7 @@ cliphist
 dhcpcd
 dialog
 discord
+direnv
 docker
 docker-compose
 dosfstools
@@ -69,6 +70,7 @@ terminus-font
 tokei
 tree
 ttf-font-awesome
+ttf-jetbrains-mono
 ttf-nerd-fonts-symbols-mono
 ufw
 ufw-docker

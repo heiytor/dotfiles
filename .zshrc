@@ -40,7 +40,19 @@ if [ -f "$HOME/bin/asdf" ]; then
     fpath=(${ASDF_DATA_DIR:-$HOME/.asdf}/completions $fpath)
 fi
 
+eval "$(direnv hook zsh)"
+
 autoload -Uz compinit && compinit
+
+untar() {
+   if [[ -f "$1" ]]; then
+       local dir_name="${1%.tar.gz}"
+       mkdir -p "$dir_name"
+       tar -xzf "$1" -C "$dir_name"
+   else
+       echo "File not found: $1"
+   fi
+}
 
 alias clear="printf '\033[2J\033[3J\033[H'" # Make clear also clear the scrollback buffer
 alias c="clear"
