@@ -45,7 +45,7 @@ sync_zsh_pkgs() {
     # Auto pairs
     if [[ ! -d "$omz_custom/plugins/zsh-autopair" ]]; then
         git clone https://github.com/hlissner/zsh-autopair.git \
-            "$omz_custom/plugins/hlissner/zsh-autopair"
+            "$omz_custom/plugins/zsh-autopair"
         ((plugins_installed++))
     fi
     
