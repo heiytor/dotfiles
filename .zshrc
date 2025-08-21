@@ -16,6 +16,7 @@ plugins=(
     zsh-syntax-highlighting
     zsh-autosuggestions
     zsh-autopair
+    fzf-tab
     history-search-multi-word
 )
 
