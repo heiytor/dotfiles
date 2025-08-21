@@ -13,6 +13,7 @@ plugins=(
     docker-compose
     sudo
 
+    zsh-completions
     zsh-syntax-highlighting
     zsh-autosuggestions
     zsh-autopair
@@ -65,8 +66,7 @@ alias g="git"
 alias tb="nc termbin.com 9999"
 alias ls="exa --icons=always --git"
 alias ll="exa --icons=always --git -l"
-alias cat="bat"
-alias ssh="TERM=xterm ssh"
+alias cat="bat --style=plain --paging=never --color auto"
 alias ssh="TERM=xterm ssh" # Force xterm compatibility for better SSH sessions
 
 if command -v zoxide &> /dev/null; then eval "$(zoxide init --cmd cd zsh)"; fi # Initialize zoxide for smart directory jumping

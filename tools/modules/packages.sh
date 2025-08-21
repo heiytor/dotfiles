@@ -28,6 +28,13 @@ sync_zsh_pkgs() {
     local omz_custom="$HOME/.oh-my-zsh/custom"
     local plugins_installed=0
     
+    # More completions
+    if [[ ! -d "$omz_custom/plugins/zsh-completions" ]]; then
+        git clone https://github.com/zsh-users/zsh-completions.git \
+            "$omz_custom/plugins/zsh-completions"
+        ((plugins_installed++))
+    fi
+
     # Syntax highlighting
     if [[ ! -d "$omz_custom/plugins/zsh-syntax-highlighting" ]]; then
         git clone https://github.com/zsh-users/zsh-syntax-highlighting.git \
