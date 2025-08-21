@@ -42,5 +42,12 @@ sync_zsh_pkgs() {
         ((plugins_installed++))
     fi
     
+    # History Search
+    if [[ ! -d "$omz_custom/plugins/history-search-multi-word" ]]; then
+        git clone git@github.com:zdharma-continuum/history-search-multi-word.git \
+            "$omz_custom/plugins/history-search-multi-word"
+        ((plugins_installed++))
+    fi
+    
     return $(( plugins_installed > 0 ? 0 : 1 ))
 }

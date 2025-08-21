@@ -14,6 +14,7 @@ plugins=(
     sudo
     zsh-syntax-highlighting
     zsh-autosuggestions
+    history-search-multi-word
 )
 
 source $ZSH/oh-my-zsh.sh
