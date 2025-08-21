@@ -12,8 +12,10 @@ plugins=(
     docker
     docker-compose
     sudo
+
     zsh-syntax-highlighting
     zsh-autosuggestions
+    zsh-autopair
     history-search-multi-word
 )
 

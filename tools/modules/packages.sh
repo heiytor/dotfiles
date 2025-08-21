@@ -42,6 +42,13 @@ sync_zsh_pkgs() {
         ((plugins_installed++))
     fi
     
+    # Auto pairs
+    if [[ ! -d "$omz_custom/plugins/zsh-autopair" ]]; then
+        git clone https://github.com/hlissner/zsh-autopair.git \
+            "$omz_custom/plugins/hlissner/zsh-autopair"
+        ((plugins_installed++))
+    fi
+    
     # History Search
     if [[ ! -d "$omz_custom/plugins/history-search-multi-word" ]]; then
         git clone https://github.com/zdharma-continuum/history-search-multi-word.git \
