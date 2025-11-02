@@ -1,0 +1,119 @@
+#!/usr/bin/env sh
+
+STATE_FILE="/run/user/$UID/de-posture-state"
+TIMER_FILE="/run/user/$UID/de-posture-timer"
+
+SHOW_ICON=true
+SHOW_TIME=true
+JSON_OUTPUT=false
+
+# Parse arguments
+for arg in "$@"; do
+    case "$arg" in
+        "-s")
+            SHOW_TIME=false
+            ;;
+        "--no-icon")
+            SHOW_ICON=false
+            ;;
+        "--json")
+            JSON_OUTPUT=true
+            ;;
+    esac
+done
+
+if [ ! -f "$STATE_FILE" ]; then
+    if [ "$JSON_OUTPUT" = "true" ]; then
+        echo '{"text":"⏸️","tooltip":"Posture Timer: Inactive"}'
+    elif [ "$SHOW_ICON" = "true" ]; then
+        echo "⏸️"
+    fi
+    exit 0
+fi
+
+STATE=$(cat "$STATE_FILE")
+CURRENT_TIME=$(date +%s)
+
+case "$STATE" in
+    "inactive")
+        if [ "$JSON_OUTPUT" = "true" ]; then
+            echo '{"text":"⏸️","tooltip":"Posture Timer: Inactive"}'
+        elif [ "$SHOW_ICON" = "true" ]; then
+            echo "⏸️"
+        fi
+        ;;
+    "sitting")
+        if [ -f "$TIMER_FILE" ]; then
+            END_TIME=$(cat "$TIMER_FILE")
+            REMAINING=$((END_TIME - CURRENT_TIME))
+            if [ $REMAINING -le 0 ]; then
+                if [ "$JSON_OUTPUT" = "true" ]; then
+                    echo '{"text":"⏸️","tooltip":"Posture Timer: Inactive"}'
+                elif [ "$SHOW_ICON" = "true" ]; then
+                    echo "⏸️"
+                fi
+            else
+                MINUTES=$((REMAINING / 60))
+                if [ "$JSON_OUTPUT" = "true" ]; then
+                    echo "{\"text\":\"🪑\",\"tooltip\":\"Posture Timer: Sitting - ${MINUTES}m remaining\"}"
+                else
+                    output=""
+                    if [ "$SHOW_ICON" = "true" ]; then
+                        output="🪑"
+                    fi
+                    if [ "$SHOW_TIME" = "true" ]; then
+                        if [ "$SHOW_ICON" = "true" ]; then
+                            output="$output ${MINUTES}m"
+                        else
+                            output="${MINUTES}m"
+                        fi
+                    fi
+                    echo "$output"
+                fi
+            fi
+        else
+            if [ "$JSON_OUTPUT" = "true" ]; then
+                echo '{"text":"⏸️","tooltip":"Posture Timer: Inactive"}'
+            elif [ "$SHOW_ICON" = "true" ]; then
+                echo "⏸️"
+            fi
+        fi
+        ;;
+    "standing")
+        if [ -f "$TIMER_FILE" ]; then
+            END_TIME=$(cat "$TIMER_FILE")
+            REMAINING=$((END_TIME - CURRENT_TIME))
+            if [ $REMAINING -le 0 ]; then
+                if [ "$JSON_OUTPUT" = "true" ]; then
+                    echo '{"text":"⏸️","tooltip":"Posture Timer: Inactive"}'
+                elif [ "$SHOW_ICON" = "true" ]; then
+                    echo "⏸️"
+                fi
+            else
+                MINUTES=$((REMAINING / 60))
+                if [ "$JSON_OUTPUT" = "true" ]; then
+                    echo "{\"text\":\"🧍\",\"tooltip\":\"Posture Timer: Standing - ${MINUTES}m remaining\"}"
+                else
+                    output=""
+                    if [ "$SHOW_ICON" = "true" ]; then
+                        output="🧍"
+                    fi
+                    if [ "$SHOW_TIME" = "true" ]; then
+                        if [ "$SHOW_ICON" = "true" ]; then
+                            output="$output ${MINUTES}m"
+                        else
+                            output="${MINUTES}m"
+                        fi
+                    fi
+                    echo "$output"
+                fi
+            fi
+        else
+            if [ "$JSON_OUTPUT" = "true" ]; then
+                echo '{"text":"⏸️","tooltip":"Posture Timer: Inactive"}'
+            elif [ "$SHOW_ICON" = "true" ]; then
+                echo "⏸️"
+            fi
+        fi
+        ;;
+esac

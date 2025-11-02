@@ -1,0 +1,23 @@
+#!/usr/bin/env sh
+
+THEMES=$(ls -1 "$HOME/themes" | grep -v '^current$' | sort)
+CURRENT_THEME=$(de-theme-get name 2>/dev/null || echo "")
+
+NEXT_THEME=""
+FOUND_CURRENT=0
+for theme in $THEMES; do
+    if [ "$FOUND_CURRENT" -eq 1 ]; then
+        NEXT_THEME="$theme"
+        break
+    fi
+    if [ "$theme" = "$CURRENT_THEME" ]; then
+        FOUND_CURRENT=1
+    fi
+done
+
+if [ -z "$NEXT_THEME" ]; then
+    NEXT_THEME=$(echo "$THEMES" | head -n1)
+fi
+
+de-theme-set "$NEXT_THEME"
+notify-send "Theme changed" "Current theme: $NEXT_THEME"

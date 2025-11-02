@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+
+pkill elephant
+pkill walker
+
+de-restart-app elephant
+wait 2
+de-restart-app walker --gapplication-service 

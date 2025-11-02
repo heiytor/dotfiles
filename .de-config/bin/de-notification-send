@@ -1,0 +1,66 @@
+#!/usr/bin/env sh
+
+TITLE=""
+BODY=""
+AUDIO=""
+TIMEOUT="3000"
+URGENCY="normal"
+
+show_usage() {
+    SCRIPT_NAME=$(basename "$0")
+    echo "Usage: $SCRIPT_NAME <title> <body> [options]"
+    echo ""
+    echo "Options:"
+    echo "  -a, --audio            Play notification sound"
+    echo "  -t, --timeout <ms>     Notification timeout in milliseconds (default: 3000)"
+    echo "  -u, --urgent           Set notification as urgent"
+    echo "  -h, --help             Show this help message"
+    echo ""
+    echo "Examples:"
+    echo "  $SCRIPT_NAME \"Timer\" \"Break time!\" --audio"
+    echo "  $SCRIPT_NAME \"Alert\" \"Important message\" --urgent --timeout 5000"
+}
+
+if [ $# -lt 2 ]; then
+    show_usage
+    exit 1
+fi
+
+TITLE="$1"
+BODY="$2"
+shift 2
+
+while [ $# -gt 0 ]; do
+    case "$1" in
+        -a|--audio)
+            AUDIO=1
+            shift
+            ;;
+        -t|--timeout)
+            if [ -z "$2" ]; then
+                echo "Error: --timeout requires a value"
+                exit 1
+            fi
+            TIMEOUT="$2"
+            shift 2
+            ;;
+        -u|--urgent)
+            URGENCY="critical"
+            shift
+            ;;
+        -h|--help)
+            show_usage
+            exit 0
+            ;;
+        *)
+            echo "Error: Unknown option $1"
+            show_usage
+            exit 1
+            ;;
+    esac
+done
+
+notify-send "$TITLE" "$BODY" -t "$TIMEOUT" -u "$URGENCY"
+if [ -n "$AUDIO" ]; then
+    paplay "$HOME/sounds/notification.mp3" >/dev/null 2>&1 &
+fi

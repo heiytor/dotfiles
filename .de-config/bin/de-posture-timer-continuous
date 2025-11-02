@@ -1,0 +1,49 @@
+#!/usr/bin/env sh
+
+remaining() { 
+    if [ ! -f "$TIMER_FILE" ]; then
+        echo ""
+    else
+        echo "$(($(cat "$TIMER_FILE") - $(date +%s)))" 
+    fi
+}
+
+cycle() {
+    REMAINING=$(remaining)
+    if [ -n "$REMAINING" ] && [ $REMAINING -le 0 ]; then
+        case $(cat "$STATE_FILE") in
+            "sitting")
+                de-posture-timer-set stand 1800 notify
+                ;;
+            "standing")
+                de-posture-timer-set sit 7200 notify
+                ;;
+        esac
+    fi
+
+    echo $(cat "$STATE_FILE")
+}
+
+STATE_FILE="/run/user/$UID/de-posture-state"
+TIMER_FILE="/run/user/$UID/de-posture-timer"
+
+if [ ! -f "$STATE_FILE" ]; then
+    echo "inactive" > "$STATE_FILE"
+fi
+
+while true; do
+    if [ "$(cat "$STATE_FILE")" = "inactive" ]; then
+        echo '{"text":"🛑","alt":""}'
+    else
+        case $(cycle) in
+            "sitting")
+                echo $(printf '{"text":"🪑","alt":"sitting for %dm"}' "$(($(remaining) / 60))")
+                ;;
+            "standing")
+                echo $(printf '{"text":"🧍","alt":"standing for %dm"}' "$(($(remaining) / 60))")
+                ;;
+        esac
+    fi
+
+    sleep 1
+done

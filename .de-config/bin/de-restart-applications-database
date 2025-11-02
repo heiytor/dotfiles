@@ -1,0 +1,23 @@
+#!/bin/bash
+
+DE_APPS="$HOME/.de-config/applications"
+LOCAL_APPS="$HOME/.local/share/applications"
+ICONS_DIR="$HOME/.local/share/icons/hicolor/48x48/apps"
+
+if [ -d "$DE_APPS/icons" ]; then
+  mkdir -p "$ICONS_DIR"
+  cp "$DE_APPS/icons/"*.png "$ICONS_DIR/" 2>/dev/null
+  gtk-update-icon-cache "$HOME/.local/share/icons/hicolor" &>/dev/null
+fi
+
+if [ -d "$DE_APPS" ]; then
+  mkdir -p "$LOCAL_APPS"
+  cp "$DE_APPS/"*.desktop "$LOCAL_APPS/" 2>/dev/null
+fi
+
+if [ -d "$DE_APPS/hidden" ]; then
+  mkdir -p "$LOCAL_APPS"
+  cp "$DE_APPS/hidden/"*.desktop "$LOCAL_APPS/" 2>/dev/null
+fi
+
+sudo update-desktop-database "$LOCAL_APPS"

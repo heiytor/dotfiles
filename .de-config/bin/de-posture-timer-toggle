@@ -1,0 +1,19 @@
+#!/usr/bin/env sh
+
+NOTIFY=$1
+
+STATE_FILE="/run/user/$UID/de-posture-state"
+TIMER_FILE="/run/user/$UID/de-posture-timer"
+
+if [ ! -f "$STATE_FILE" ]; then
+    echo "inactive" > "$STATE_FILE"
+fi
+
+case $(cat "$STATE_FILE") in
+    "inactive")
+        de-posture-timer-set sit 7200 "$NOTIFY"
+        ;;
+    "sitting"|"standing")
+        de-posture-timer-set stop 0 "$NOTIFY"
+        ;;
+esac

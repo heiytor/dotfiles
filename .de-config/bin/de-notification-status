@@ -1,0 +1,11 @@
+#!/usr/bin/env sh
+
+if pgrep -x "mako" > /dev/null; then
+    if makoctl mode | grep -q "do-not-disturb"; then
+        echo "󰂛"
+    else
+        echo "󰂚"
+    fi
+else
+    echo "❌"
+fi

@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+
+de-restart-app swaybg -i ~/themes/current/wallpaper -m fill
+

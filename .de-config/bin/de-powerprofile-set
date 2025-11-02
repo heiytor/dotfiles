@@ -1,0 +1,33 @@
+#!/usr/bin/env sh
+
+profile="$1"
+
+if [ -z "$profile" ]; then
+    echo "Usage: $0 <performance|balanced|power-saver>"
+    echo "Available profiles:"
+    echo "  - performance"
+    echo "  - balanced"
+    echo "  - power-saver"
+    exit 1
+fi
+
+case "$profile" in
+    performance|balanced|power-saver)
+        if command -v powerprofilesctl &> /dev/null; then
+            if ! powerprofilesctl set "$profile"; then
+                exit 1
+            fi
+        else
+            echo "Error: powerprofilesctl not found"
+            exit 1
+        fi
+        ;;
+    *)
+        echo "Error: Invalid profile '$profile'"
+        echo "Valid profiles:"
+        echo "  - performance"
+        echo "  - balanced"
+        echo "  - power-saver"
+        exit 1
+        ;;
+esac

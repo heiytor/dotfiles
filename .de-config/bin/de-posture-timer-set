@@ -1,0 +1,68 @@
+#!/usr/bin/env sh
+
+set_state() {
+    echo "$1" > "$STATE_FILE"
+}
+
+set_timer() {
+    echo "$1" > "$TIMER_FILE"
+}
+
+STATE_FILE="/run/user/$UID/de-posture-state"
+TIMER_FILE="/run/user/$UID/de-posture-timer"
+
+MODE=$1
+TIMER=$2
+NOTIFY=$3
+
+if [ -z "$MODE" ] || [ -z "$TIMER" ]; then
+    SCRIPT_NAME=$(basename "$0")
+    echo "Usage: $SCRIPT_NAME <mode> <timer> [notify]"
+    echo ""
+    echo "Modes:"
+    echo "  sit"
+    echo "  stand"
+    echo "  stop"
+    echo ""
+    echo "Examples:"
+    echo "  $SCRIPT_NAME sit 7200 notify"
+    echo "  $SCRIPT_NAME stand 1200 notify"
+    echo "  $SCRIPT_NAME stop 0 notify"
+    exit 1
+fi
+
+if [ ! -f "$STATE_FILE" ]; then
+    set_state "inactive"
+fi
+
+case "$MODE" in
+    "sit")
+        set_state "sitting"
+        set_timer $(($(date +%s) + TIMER))
+
+        if [ "$NOTIFY" = "notify" ]; then
+            de-notification-send "Posture Timer" "Sitting mode activated for $((TIMER / 60))min 🪑" -a
+        fi
+        ;;
+    "stand")
+        set_state "standing"
+        set_timer $(($(date +%s) + TIMER))
+
+        if [ "$NOTIFY" = "notify" ]; then
+            de-notification-send "Posture Timer" "Standing mode activated for $((TIMER / 60))min 🧍" -a
+        fi
+        ;;
+    "stop")
+        set_state "inactive"
+        rm -f "$TIMER_FILE"
+
+        if [ "$NOTIFY" = "notify" ]; then
+            de-notification-send "Posture Timer" "Timer stopped 🛑" -a
+        fi
+        ;;
+    *)
+        echo "Invalid mode: $MODE"
+        echo "Valid modes: sit, stand, stop"
+        exit 1
+        ;;
+esac

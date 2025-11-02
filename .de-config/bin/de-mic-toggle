@@ -1,0 +1,9 @@
+#!/usr/bin/env sh
+
+swayosd-client --monitor "$(hyprctl monitors -j | jq -r '.[] | select(.focused == true).name')" --input-volume mute-toggle
+
+if [ "$1" = "notify" ]; then
+    pactl get-source-mute @DEFAULT_SOURCE@ | grep -q "yes" && 
+        notify-send "Microphone muted" || 
+        notify-send "Microphone unmuted"
+fi

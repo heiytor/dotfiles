@@ -1,0 +1,5 @@
+#!/usr/bin/env sh
+
+if pgrep -x elephant > /dev/null && pgrep -f "walker --gapplication-service" > /dev/null; then
+  exec walker --width 644 --maxheight 300 --minheight 300 "$@"
+fi
