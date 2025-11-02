@@ -7,14 +7,14 @@ This repository uses Git directly to manage dotfiles, following the **"bare repo
 ### One-Command Install
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/heiytor/dotfiles/main/tools/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/heiytor/dotfiles/main/.de-tools/install.sh | bash
 ```
 
 ### Manual Installation
 
 1. **Download the installer:**
    ```bash
-   curl -fsSL https://raw.githubusercontent.com/heiytor/dotfiles/main/tools/install.sh -o install.sh
+   curl -fsSL https://raw.githubusercontent.com/heiytor/dotfiles/main/.de-tools/install.sh -o install.sh
    chmod +x install.sh
    ```
 
