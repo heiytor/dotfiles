@@ -6,7 +6,7 @@ font=Terminus 11
 anchor=top-right
 default-timeout=5000
 max-icon-size=32
-include=~/themes/current/mako
+include=~/.de-config/themes/current/mako
 
 [mode=do-not-disturb]
 invisible=true

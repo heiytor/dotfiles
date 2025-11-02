@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-THEME_INFO_FILE="$HOME/themes/current/spec"
+THEME_INFO_FILE="$HOME/.de-config/themes/current/spec"
 if [ ! -f "$THEME_INFO_FILE" ]; then
     echo "Error: File $THEME_INFO_FILE not found" >&2
     exit 1

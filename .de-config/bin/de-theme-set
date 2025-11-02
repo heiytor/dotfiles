@@ -2,7 +2,7 @@
 
 available_themes() {
     echo "Available themes:" >&2
-    for theme in ~/themes/*; do
+    for theme in ~/.de-config/themes/*; do
         if [[ -f "$theme" ]] || [[ -d "$theme" ]]; then
             theme_name=$(basename "$theme")
             if [[ "$theme_name" != "current" ]]; then
@@ -18,8 +18,8 @@ if [[ -z "$1" ]]; then
     exit 1
 fi
 
-THEMES_DIR="$HOME/themes"
-THEMES_CURRENT_DIR="$HOME/themes/current"
+THEMES_DIR="$HOME/.de-config/themes"
+THEMES_CURRENT_DIR="$HOME/.de-config/themes/current"
 
 THEME_NAME=$(echo "$1" | tr '[:upper:]' '[:lower:]' | tr ' ' '-')
 THEME_PATH="$THEMES_DIR/$THEME_NAME"
