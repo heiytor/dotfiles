@@ -1,7 +1,0 @@
-#!/usr/bin/env sh
-
-APP=$1
-shift
-
-pkill -x "$APP"
-setsid uwsm app -- "$APP" "$@" >/dev/null 2>&1 &

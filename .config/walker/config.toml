@@ -5,3 +5,21 @@ theme_base           = []
 theme_location       = ["~/.config/walker/themes/"]
 theme                = "de"
 
+[providers]
+default = [ "desktopapplications" ]
+
+[[providers.prefixes]]
+prefix = "/"
+provider = "providerlist"
+
+[[providers.prefixes]]
+prefix = "="
+provider = "calc"
+
+[[providers.prefixes]]
+prefix = ":"
+provider = "runner"
+
+[[providers.prefixes]]
+prefix = "@"
+provider = "websearch"

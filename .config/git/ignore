@@ -1,0 +1,5 @@
+.de-config/session/**
+!.de-config/session/.keep
+
+.de-config/applications/app-images/**
+!.de-config/applications/app-images/.keep

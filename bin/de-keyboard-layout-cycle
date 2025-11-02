@@ -1,7 +1,0 @@
-#!/usr/bin/env sh
-
-NEW_LAYOUT=$([ "$(de-keyboard-layout-get)" = "us" ] && echo "br" || echo "us")
-de-keyboard-layout-set "$NEW_LAYOUT"
-if [ "$1" = "notify" ]; then
-    notify-send "Keyboard layout changed to $NEW_LAYOUT"
-fi

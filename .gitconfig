@@ -2,5 +2,34 @@
 	email = heitor.danilo@icloud.com
 	name = Heitor Danilo
 
+[init]
+	defaultBranch = main
+
+[pull]
+	rebase = true
+
+[push]
+	autoSetupRemote = true
+
+[commit]
+	verbose = true
+
+[branch]
+	sort = -committerdate
+
+[tag]
+	sort = -version:refname
+
 [core]
-    excludesfile = .config/.de-gitignore
+    pager = delta
+
+[interactive]
+    diffFilter = delta --color-only
+
+[delta]
+    navigate = true
+    side-by-side = true
+    line-numbers = true
+
+[merge]
+    conflictStyle = zdiff3

@@ -1,17 +1,5 @@
-@define-color bg_primary #e5e5e5;
-@define-color bg_secondary #dadada;
-
-@define-color border_primary #b8b8b8;
-@define-color border_focus #888888;
-
-@define-color text_primary #1a1a1a;
-@define-color text_secondary #606060;
-@define-color text_active #000000;
-@define-color text_disabled #a0a0a0;
-
-@define-color input_bg #efefef;
-@define-color selection_bg #d0d0d0;
-
-@define-color scrollbar_track #e5e5e5;
-@define-color scrollbar_thumb #b8b8b8;
-@define-color scrollbar_thumb_hover #888888;
+@define-color text #1a1a1a;
+@define-color base #e5e5e5;
+@define-color border #b8b8b8;
+@define-color background #dadada;
+@define-color selected-text #000000;

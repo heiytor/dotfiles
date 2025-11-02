@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-# Install ans sync packages from .ensure-installed file
+# Install ans sync packages from .de-config/ensure-installed file
 sync_system_pkgs() {
-    local ensure_file="${1:-$HOME/.ensure-installed}"
+    local ensure_file="${1:-$HOME/.de-config/ensure-installed}"
     
     if [[ -f "$ensure_file" ]]; then
         grep -v '^#\|^$' "$ensure_file" | yay -S --needed --noconfirm -

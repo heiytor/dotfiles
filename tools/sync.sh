@@ -44,7 +44,7 @@ header "📦 Updating essential packages"
 if sync_system_pkgs; then
     success "Packages updated"
 else
-    warning "Could not update packages from .ensure-installed"
+    warning "Could not update packages from .de-config/ensure-installed"
 fi
 
 header "⚡ Updating Neovim packages"

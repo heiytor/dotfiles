@@ -7,6 +7,7 @@
     ],
     "modules-center": [],
     "modules-right": [
+        "group/misc",
         "tray",
         "backlight",
         "custom/notifications",
@@ -132,5 +133,31 @@
         "exec": "de-powerprofile-get --short",
         "on-click": "de-powerprofile-cycle notify",
         "interval": 1
+    },
+    "group/misc": {
+        "orientation": "inherit",
+        "drawer": {
+            "transition-duration": 500,
+            "children-class": "misc-drawer",
+            "transition-left-to-right": false
+        },
+        "modules": [
+            "custom/misc-icon",
+            "custom/posture-timer"
+        ]
+    },
+
+    "custom/misc-icon": {
+        "format": "⚙️",
+        "tooltip": false
+    },
+    "custom/posture-timer": {
+        "format": "{}",
+        "exec": "de-posture-timer-continuous",
+        "return-type": "json",
+        "tooltip": true,
+        "tooltip-format": "{alt}",
+        "on-click": "de-posture-timer-toggle notify",
+        "restart-interval": 60
     }
 }

@@ -92,7 +92,7 @@ header "📦 Installing essential packages"
 if sync_system_pkgs; then
     success "Essential packages installed"
 else
-    error ".ensure-installed file not found in dotfiles"
+    error ".de-config/ensure-installed file not found in dotfiles"
     exit 1
 fi
 
