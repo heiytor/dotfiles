@@ -1,0 +1,4 @@
+export SUDO_EDITOR=vim
+export EDITOR=nvim
+export TERMINAL=kitty
+export PASSWORD_MANAGER=bitwarden-desktop

@@ -1,0 +1,2 @@
+export PATH=$HOME/.de-config/bin:$PATH
+source ~/.config/uwsm/default
