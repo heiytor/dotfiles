@@ -2,7 +2,7 @@
 
 notify-send "Syncing and restarting..."
 
-$HOME/tools/sync.sh
+$HOME/.de-tools/sync.sh
 de-restart
 
 notify-send "System restarted"
