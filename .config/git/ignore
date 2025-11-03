@@ -5,3 +5,5 @@
 !.de-config/applications/app-images/.keep
 
 .de-config/themes/current
+
+.config/nvim/lazy-lock.json
