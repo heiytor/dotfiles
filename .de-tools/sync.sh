@@ -12,9 +12,9 @@ safe() {
 }
 
 # Load modules
-source "$HOME/tools/modules/asdf.sh"
-source "$HOME/tools/modules/logger.sh"
-source "$HOME/tools/modules/packages.sh"
+source "$HOME/.de-tools/modules/asdf.sh"
+source "$HOME/.de-tools/modules/logger.sh"
+source "$HOME/.de-tools/modules/packages.sh"
 
 if [[ $EUID -eq 0 ]]; then
     error "This script should not be run as root"

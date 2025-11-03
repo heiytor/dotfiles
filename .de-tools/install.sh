@@ -83,9 +83,9 @@ dotfiles config --local status.showUntrackedFiles no
 success "Dotfiles repository configured"
 
 log "Loading modules..."
-source "$HOME/tools/modules/asdf.sh"
-source "$HOME/tools/modules/logger.sh"
-source "$HOME/tools/modules/packages.sh"
+source "$HOME/.de-tools/modules/asdf.sh"
+source "$HOME/.de-tools/modules/logger.sh"
+source "$HOME/.de-tools/modules/packages.sh"
 
 header "📦 Installing essential packages"
 
