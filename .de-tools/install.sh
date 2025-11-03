@@ -258,7 +258,7 @@ fi
 header "🎨 Configuring default theme"
 
 rm -rf "$HOME/.de-config/themes/current"
-ln -nsf "$HOME/.de-config/themes/simple-dark" "$HOME/themes/current"
+ln -nsf "$HOME/.de-config/themes/simple-dark" "$HOME/.de-config/themes/current"
 
 success "Default theme applied: simple-dark"
 
