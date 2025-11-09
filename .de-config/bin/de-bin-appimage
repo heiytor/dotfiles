@@ -1,0 +1,22 @@
+#!/usr/bin/env sh
+
+if [ -z "$1" ]; then
+  echo "Usage: de-bin <app-name>"
+  exit 1
+fi
+
+filter_by_name() {
+  while read -r file; do
+    basename "$file" | grep -iq "$(echo "$1" | tr '-' '.')" && echo "$file"
+  done
+}
+
+APPIMAGE_DIR="$HOME/.de-config/applications/app-images"
+APPIMAGE=$(find "$APPIMAGE_DIR" -type f -executable 2>/dev/null | filter_by_name "$1" | sort -V | tail -n1)
+
+if [ -n "$APPIMAGE" ] && [ -f "$APPIMAGE" ]; then
+  exec "$APPIMAGE" >/dev/null 2>&1
+else
+  de-notification-send "$1 not found" "No $1 executable found in $APPIMAGE_DIR" -u -t 10000
+  exit 1
+fi

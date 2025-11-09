@@ -2,7 +2,7 @@
 Version=1.0
 Type=Application
 Name=Vial
-Exec=de-bin-vial
+Exec=de-bin-appimage vial
 Icon=vial
 Terminal=false
 Categories=Utility;

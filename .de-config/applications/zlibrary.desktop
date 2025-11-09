@@ -1,0 +1,8 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Z-Library
+Exec=de-bin-appimage z-library
+Icon=zlibrary
+Terminal=false
+Categories=Utility;Education;
