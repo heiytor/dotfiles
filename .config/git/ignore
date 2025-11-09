@@ -7,3 +7,5 @@
 .de-config/themes/current
 
 .config/nvim/lazy-lock.json
+
+**/.claude/settings.local.json
