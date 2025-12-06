@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Name=Web Apps Manager
+Comment=Manager for webapps
+Exec=kitty --class gum-webapp-menu -e de-webapp-menu
+Icon=application-x-executable
+Type=Application
+Categories=System;
+Terminal=false

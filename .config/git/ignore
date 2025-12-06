@@ -6,6 +6,11 @@
 
 .de-config/themes/current
 
+.de-config/applications/webapps/**
+.de-config/applications/webapps/icons/**
+!.de-config/applications/webapps/.keep
+!.de-config/applications/webapps/icons/.keep
+
 .config/nvim/lazy-lock.json
 
 **/.claude/settings.local.json

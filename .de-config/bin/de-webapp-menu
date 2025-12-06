@@ -1,0 +1,68 @@
+#!/usr/bin/env sh
+
+if ! command -v gum >/dev/null 2>&1; then
+    echo "✗ gum is not installed"
+    exit 1
+fi
+
+WEBAPPS_DIR="$HOME/.de-config/applications/webapps"
+
+CHOICE=$(gum choose \
+    "Register Web App" \
+    "Remove Web App" \
+    --show-help=false \
+    --header "" \
+    --height 8)
+
+[ -z "$CHOICE" ] && exit 0
+
+case "$CHOICE" in
+    "Register Web App")
+        echo ""
+        NAME=$(gum input --placeholder "App name (e.g. GitHub)")
+        [ -z "$NAME" ] && exit 0
+        
+        URL=$(gum input --placeholder "URL (e.g. https://github.com)")
+        [ -z "$URL" ] && exit 0
+        
+        ICON=$(gum input --placeholder "Icon URL (Enter for auto)")
+        
+        echo ""
+        if [ -n "$ICON" ]; then
+            de-webapp-register "$NAME" "$URL" "$ICON"
+        else
+            de-webapp-register "$NAME" "$URL"
+        fi
+        ;;
+        
+    "Remove Web App")
+        if [ ! -d "$WEBAPPS_DIR" ] || [ -z "$(ls -A "$WEBAPPS_DIR"/*.desktop 2>/dev/null)" ]; then
+            echo ""
+            echo "No web apps found"
+            exit 0
+        fi
+        
+        APPS=""
+        for desktop in "$WEBAPPS_DIR"/*.desktop; do
+            [ -f "$desktop" ] || continue
+            if grep -q "Comment=.*Web App" "$desktop" 2>/dev/null; then
+                APP_NAME=$(grep "^Name=" "$desktop" | cut -d= -f2)
+                APPS="$APPS$APP_NAME
+"
+            fi
+        done
+        
+        if [ -z "$APPS" ]; then
+            echo ""
+            echo "No web apps found"
+            exit 0
+        fi
+        
+        echo ""
+        APP_TO_REMOVE=$(echo "$APPS" | gum choose --header "Select app to remove:")
+        
+        if [ -n "$APP_TO_REMOVE" ]; then
+            de-webapp-remove "$APP_TO_REMOVE"
+        fi
+        ;;
+esac

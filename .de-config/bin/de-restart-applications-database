@@ -1,23 +1,65 @@
-#!/bin/bash
+#!/usr/bin/env sh
 
 DE_APPS="$HOME/.de-config/applications"
+DE_WEBAPPS="$HOME/.de-config/applications/webapps"
 LOCAL_APPS="$HOME/.local/share/applications"
 ICONS_DIR="$HOME/.local/share/icons/hicolor/48x48/apps"
 
-if [ -d "$DE_APPS/icons" ]; then
-  mkdir -p "$ICONS_DIR"
-  cp "$DE_APPS/icons/"*.png "$ICONS_DIR/" 2>/dev/null
-  gtk-update-icon-cache "$HOME/.local/share/icons/hicolor" &>/dev/null
-fi
+clean_orphaned_desktops() {
+  local source_dir="$1"
+  local is_webapp="$2"
+  
+  [ -d "$LOCAL_APPS" ] || return
+  
+  for desktop in "$LOCAL_APPS"/*.desktop; do
+    [ -f "$desktop" ] || continue
+    basename=$(basename "$desktop")
+    
+    if [ "$is_webapp" = "true" ]; then
+      grep -q "Comment=.*Web App" "$desktop" 2>/dev/null || continue
+    else
+      grep -q "Comment=.*Web App" "$desktop" 2>/dev/null && continue
+      [ -f "$DE_APPS/hidden/$basename" ] && continue
+    fi
+    
+    [ ! -f "$source_dir/$basename" ] && rm -f "$desktop"
+  done
+}
 
-if [ -d "$DE_APPS" ]; then
-  mkdir -p "$LOCAL_APPS"
-  cp "$DE_APPS/"*.desktop "$LOCAL_APPS/" 2>/dev/null
-fi
+clean_orphaned_icons() {
+  local source_icons="$1"
+  
+  [ -d "$ICONS_DIR" ] && [ -d "$source_icons" ] || return
+  
+  for icon in "$ICONS_DIR"/*.png; do
+    [ -f "$icon" ] || continue
+    basename=$(basename "$icon")
+    
+    if [ ! -f "$source_icons/$basename" ]; then
+      [ ! -f "$DE_APPS/icons/$basename" ] && [ ! -f "$DE_WEBAPPS/icons/$basename" ] && rm -f "$icon"
+    fi
+  done
+}
 
-if [ -d "$DE_APPS/hidden" ]; then
-  mkdir -p "$LOCAL_APPS"
-  cp "$DE_APPS/hidden/"*.desktop "$LOCAL_APPS/" 2>/dev/null
-fi
+sync_files() {
+  local source_dir="$1"
+  local dest_dir="$2"
+  
+  [ -d "$source_dir" ] || return
+  mkdir -p "$dest_dir"
+  cp "$source_dir"/* "$dest_dir"/ 2>/dev/null
+}
 
+clean_orphaned_desktops "$DE_APPS" "false"
+clean_orphaned_desktops "$DE_WEBAPPS" "true"
+clean_orphaned_icons "$DE_APPS/icons"
+clean_orphaned_icons "$DE_WEBAPPS/icons"
+
+sync_files "$DE_APPS/icons" "$ICONS_DIR"
+sync_files "$DE_WEBAPPS/icons" "$ICONS_DIR"
+sync_files "$DE_APPS" "$LOCAL_APPS"
+sync_files "$DE_WEBAPPS" "$LOCAL_APPS"
+sync_files "$DE_APPS/hidden" "$LOCAL_APPS"
+
+gtk-update-icon-cache "$HOME/.local/share/icons/hicolor" &>/dev/null
 sudo update-desktop-database "$LOCAL_APPS"

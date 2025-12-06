@@ -1,0 +1,57 @@
+#!/usr/bin/env sh
+set -e
+
+APP_NAME="$1"
+APP_URL="$2"
+ICON="$3"
+
+if [ -z "$APP_NAME" ] || [ -z "$APP_URL" ]; then
+    echo "Usage: de-webapp-register \"Name\" \"URL\" [\"icon\"]"
+    exit 1
+fi
+
+APPS_DIR="$HOME/.de-config/applications/webapps"
+ICONS_DIR="$APPS_DIR/icons"
+
+mkdir -p "$APPS_DIR"
+mkdir -p "$ICONS_DIR"
+
+NORMALIZED_NAME=$(echo "$APP_NAME" | tr '[:upper:]' '[:lower:]' | tr ' ' '-')
+DESKTOP_FILE="$APPS_DIR/${NORMALIZED_NAME}.desktop"
+
+if [ -f "$DESKTOP_FILE" ]; then
+    echo "⚠ Web app '$APP_NAME' already exists"
+    echo "Overwriting..."
+fi
+
+if [ -z "$ICON" ]; then
+    DOMAIN=$(echo "$APP_URL" | sed -E 's|https?://([^/]+).*|\1|')
+    ICON="https://${DOMAIN}/favicon.ico"
+    echo "→ Fetching icon from $ICON"
+fi
+
+ICON_PATH="$ICON"
+if echo "$ICON" | grep -q "^https\?://"; then
+    ICON_FILE="${NORMALIZED_NAME}.png"
+    ICON_PATH="$ICONS_DIR/$ICON_FILE"
+    if curl -sL "$ICON" -o "$ICON_PATH"; then
+        echo "✓ Icon downloaded"
+    else
+        ICON_PATH="web-browser"
+        echo "⚠ Failed to download icon, using fallback"
+    fi
+fi
+
+cat > "$DESKTOP_FILE" << EOF
+[Desktop Entry]
+Version=1.0
+Name=$APP_NAME
+Comment=$APP_NAME Web App
+Exec=brave --app="$APP_URL"
+Icon=$ICON_PATH
+Type=Application
+Categories=Network;
+EOF
+
+echo "✓ $APP_NAME registered as $NORMALIZED_NAME.desktop"
+de-restart-applications-database
