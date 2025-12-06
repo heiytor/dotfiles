@@ -112,7 +112,8 @@
         "tooltip": false,
         "format": "{}",
         "exec": "de-notification-status",
-        "on-click": "de-notification-toggle notify",
+        "on-click": "kitty --class gum-notification-menu -e de-notification-menu",
+        "on-click-right": "de-notification-toggle notify",
         "interval": 1
     },
     "custom/theme-selector": {

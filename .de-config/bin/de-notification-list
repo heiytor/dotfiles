@@ -1,0 +1,66 @@
+#!/usr/bin/env sh
+
+parse_notifications() {
+    makoctl history 2>/dev/null | awk '
+    BEGIN { 
+        print "["
+        first = 1
+    }
+    
+    /^Notification [0-9]+:/ {
+        # Fecha anterior
+        if (current_id) {
+            printf "%s}\n", (actions ? ",\"actions\":[" actions "]" : "")
+            actions = ""
+        }
+        
+        # Nova notificação
+        if (!first) printf ","
+        first = 0
+        
+        match($0, /Notification ([0-9]+): (.+)/, m)
+        current_id = m[1]
+        title = m[2]
+        gsub(/"/, "\\\"", title)
+        
+        printf "  {\"id\":%s,\"title\":\"%s\"", current_id, title
+    }
+    
+    /^  App name:/ {
+        val = substr($0, index($0, ":")+2)
+        gsub(/"/, "\\\"", val)
+        printf ",\"app\":\"%s\"", val
+    }
+    
+    /^  Desktop entry:/ {
+        val = substr($0, index($0, ":")+2)
+        printf ",\"desktop_entry\":\"%s\"", val
+    }
+    
+    /^  Urgency:/ {
+        val = substr($0, index($0, ":")+2)
+        printf ",\"urgency\":\"%s\"", val
+    }
+    
+    /^    [a-z-]+:/ && !/^  / {
+        gsub(/:/, "", $1)
+        name = $1
+        label = substr($0, index($0, ":")+2)
+        gsub(/"/, "\\\"", label)
+        
+        actions = actions (actions ? "," : "") sprintf("{\"name\":\"%s\",\"label\":\"%s\"}", name, label)
+    }
+    
+    END { 
+        if (current_id) printf "%s}\n", (actions ? ",\"actions\":[" actions "]" : "")
+        print "]"
+    }'
+}
+
+ITEMS=$(parse_notifications)
+COUNT=$(echo "$ITEMS" | jq 'length')
+
+jq -n \
+    --argjson items "$ITEMS" \
+    --argjson count "$COUNT" \
+    '{class: ($count > 0 | if . then "mako-notifications-active" else "mako-notifications-empty" end), count: $count, items: $items}'

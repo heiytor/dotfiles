@@ -1,0 +1,30 @@
+#!/usr/bin/env sh
+
+NOTIF_JSON=$(de-notification-list)
+COUNT=$(echo "$NOTIF_JSON" | jq -r ".count")
+
+if [ "$COUNT" -eq 0 ]; then
+    gum style --foreground 212 "No notifications"
+    sleep 1
+    exit 0
+fi
+
+NOTIFS=$(echo "$NOTIF_JSON" | jq -r '.items[] | "\(.id)|\(.app): \(.title)"')
+SELECTED=$(echo "$NOTIFS" | cut -d"|" -f2 | gum choose --show-help=false --header "Notifications ($COUNT)")
+
+if [ -n "$SELECTED" ]; then
+    ID=$(echo "$NOTIFS" | grep -F "$SELECTED" | cut -d"|" -f1)
+    ACTION=$(gum choose "Dismiss" "Dismiss All" "Cancel")
+    case "$ACTION" in
+        "Dismiss")
+            makoctl dismiss -n "$ID"
+            gum style --foreground 76 "Notification dismissed"
+            sleep 0.5
+            ;;
+        "Dismiss All")
+            makoctl dismiss -a
+            gum style --foreground 76 "All notifications dismissed"
+            sleep 0.5
+            ;;
+    esac
+fi
