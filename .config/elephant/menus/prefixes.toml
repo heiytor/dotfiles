@@ -1,0 +1,27 @@
+name = "prefixes"
+name_pretty = "Quick Access"
+icon = "applications-other"
+
+[[entries]]
+text = "= calc"
+subtext = "Perform calculations"
+icon = "accessories-calculator"
+submenu = "calc"
+
+[[entries]]
+text = ": runner"
+subtext = "Run commands"
+icon = "utilities-terminal"
+submenu = "runner"
+
+[[entries]]
+text = "@ websearch"
+subtext = "Search the web"
+icon = "web-browser"
+submenu = "websearch"
+
+[[entries]]
+text = "\" clipboard"
+subtext = "Clipboard history"
+icon = "edit-paste"
+submenu = "clipboard"
