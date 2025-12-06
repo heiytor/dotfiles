@@ -3,6 +3,8 @@
 pkill elephant
 pkill walker
 
-de-restart-app elephant
-sleep 2
-de-restart-app walker --gapplication-service 
+(
+    de-restart-app elephant
+    sleep 2
+    de-restart-app walker --gapplication-service 
+) &
