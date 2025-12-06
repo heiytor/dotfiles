@@ -1,0 +1,29 @@
+#!/usr/bin/env sh
+
+STATE_FILE="/run/user/$UID/de-idle-state"
+NOTIFY=$1
+
+if [ ! -f "$STATE_FILE" ]; then
+    if pgrep -x hypridle > /dev/null; then
+        echo "active" > "$STATE_FILE"
+    else
+        echo "inactive" > "$STATE_FILE"
+    fi
+fi
+
+case $(cat "$STATE_FILE") in
+    "active")
+        pkill -x hypridle
+        echo "inactive" > "$STATE_FILE"
+        if [ "$NOTIFY" = "notify" ]; then
+            notify-send "Idle lock disabled"
+        fi
+        ;;
+    "inactive")
+        uwsm-app -- hypridle > /dev/null 2>&1 &
+        echo "active" > "$STATE_FILE"
+        if [ "$NOTIFY" = "notify" ]; then
+            notify-send "Idle lock enabled"
+        fi
+        ;;
+esac

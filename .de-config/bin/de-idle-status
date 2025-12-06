@@ -1,0 +1,21 @@
+#!/usr/bin/env sh
+
+STATE_FILE="/run/user/$UID/de-idle-state"
+
+if [ ! -f "$STATE_FILE" ]; then
+    if pgrep -x hypridle > /dev/null; then
+        echo "󰒲"
+    else
+        echo "󰒳"
+    fi
+    exit 0
+fi
+
+case $(cat "$STATE_FILE") in
+    "active")
+        echo "󰒲"
+        ;;
+    "inactive")
+        echo "󰒳"
+        ;;
+esac

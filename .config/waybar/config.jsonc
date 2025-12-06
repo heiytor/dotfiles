@@ -10,6 +10,7 @@
         "group/misc",
         "tray",
         "backlight",
+        "custom/idle",
         "custom/notifications",
         "pulseaudio",
         "battery",
@@ -127,6 +128,13 @@
         "on-click": "de-layout-orientation-cycle",
         "interval": 1
     },
+    "custom/idle": {
+        "tooltip": false,
+        "format": "{}",
+        "exec": "de-idle-status",
+        "on-click": "de-idle-toggle notify",
+        "interval": 1
+    },
     "custom/powerprofile": {
         "tooltip": false,
         "format": "{}",
@@ -146,7 +154,6 @@
             "custom/posture-timer"
         ]
     },
-
     "custom/misc-icon": {
         "format": "⚙️",
         "tooltip": false
