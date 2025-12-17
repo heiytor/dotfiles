@@ -1,31 +1,33 @@
 return {
-    'oribarilan/lensline.nvim',
-    tag = '1.0.0',
-    event = 'LspAttach',
-    config = function()
-        -- require("lensline").setup({
-        --     providers = {
-        --         {
-        --             name = "references",
-        --             enabled = true,
-        --             quiet_lsp = true,
-        --         },
-        --         {
-        --             name = "last_author",
-        --             enabled = true,
-        --             cache_max_files = 50,
-        --         },
-        --         {
-        --             name = "diagnostics",
-        --             enabled = false,
-        --             min_level = "WARN",
-        --         },
-        --         {
-        --             name = "complexity",
-        --             enabled = false,
-        --             min_level = "L",
-        --         },
-        --     },
-        -- })
-    end,
+	"oribarilan/lensline.nvim",
+	tag = "2.0.0",
+	event = "LspAttach",
+	config = function()
+		require("lensline").setup({
+			profiles = {
+				{
+					name = "default",
+					style = { placement = "above" },
+					providers = {
+						{
+							name = "last_author",
+							enabled = true,
+						},
+						{
+							name = "usages",
+							enabled = false,
+							include = { "refs", "deps", "impls" },
+							breakdown = true,
+							show_zero = true,
+						},
+						{
+							name = "diagnostics",
+							enabled = true,
+							min_level = "INFO",
+						},
+					},
+				},
+			},
+		})
+	end,
 }

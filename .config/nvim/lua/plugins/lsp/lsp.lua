@@ -24,18 +24,12 @@ return {
 				"lua_ls",
 				"stylua",
 				"gopls",
-				"gofumpt",
-				"goimports",
 				"jsonls",
 				"bashls",
 				"dockerls",
 				"docker_compose_language_service",
-				"prettier",
-				"prettierd",
 				-- "yamlls",
 				-- "yamlfmt",
-				-- "ruby_lsp",
-				-- "rubocop",
 			},
 			handlers = {
 				function(server_name) -- default handler
@@ -78,26 +72,6 @@ return {
 									parameterNames = true,
 									functionTypeParameters = true,
 									rangeVariableTypes = true,
-								},
-							},
-						},
-					})
-				end,
-				["rubocop"] = function()
-					require("lspconfig").rubocop.setup({
-						capabilities = default_capabilities(),
-						cmd = { "bundle", "exec", "rubocop", "--lsp" },
-					})
-				end,
-				["ruby_lsp"] = function()
-					require("lspconfig").ruby_lsp.setup({
-						capabilities = default_capabilities(),
-						mason = false,
-						cmd = { vim.fn.expand("~/.asdf/shims/ruby-lsp") },
-						init_options = {
-							inlayHint = {
-								featuresConfiguration = {
-									enableAll = true,
 								},
 							},
 						},
