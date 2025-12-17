@@ -31,6 +31,33 @@ vim.api.nvim_create_autocmd("FileType", {
 			init_options = {
 				formatter = "none",
 				linters = { "rubocop" },
+				enabledFeatures = {
+					codeActions = true,
+					codeLens = true,
+					completion = true,
+					definition = true,
+					diagnostics = true,
+					documentHighlights = true,
+					documentLink = true,
+					documentSymbols = true,
+					foldingRanges = true,
+					formatting = true,
+					hover = true,
+					inlayHint = true,
+					onTypeFormatting = true,
+					selectionRanges = true,
+					semanticHighlighting = true,
+					signatureHelp = true,
+					typeHierarchy = true,
+					workspaceSymbol = true,
+				},
+				featuresConfiguration = {
+					inlayHint = {
+						enableAll = true,
+						implicitRescue = true,
+						implicitHashValue = true,
+					},
+				},
 				addonSettings = {
 					["Ruby LSP Rails"] = {
 						enablePendingMigrationsPrompt = false,
