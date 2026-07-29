@@ -35,6 +35,8 @@ return {
 					"json",
 
 					"ruby",
+
+					"python",
 				},
 
 				indent = {

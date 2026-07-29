@@ -28,6 +28,8 @@ return {
 				"bashls",
 				"dockerls",
 				"docker_compose_language_service",
+				"basedpyright",
+				"ruff",
 				-- "yamlls",
 				-- "yamlfmt",
 			},
@@ -102,6 +104,34 @@ return {
 				["yamlls"] = function()
 					require("lspconfig").yamlls.setup({
 						capabilities = default_capabilities(),
+					})
+				end,
+				["basedpyright"] = function()
+					require("lspconfig").basedpyright.setup({
+						capabilities = default_capabilities(),
+						settings = {
+							basedpyright = {
+								disableOrganizeImports = true,
+								analysis = {
+									inlayHints = {
+										variableTypes = true,
+										callArgumentNames = true,
+										functionReturnTypes = true,
+										genericTypes = true,
+									},
+								},
+							},
+						},
+					})
+				end,
+				["ruff"] = function()
+					require("lspconfig").ruff.setup({
+						capabilities = default_capabilities(),
+						on_attach = function(client, _)
+							client.server_capabilities.hoverProvider = false
+							client.server_capabilities.documentFormattingProvider = false
+							client.server_capabilities.documentRangeFormattingProvider = false
+						end,
 					})
 				end,
 			},

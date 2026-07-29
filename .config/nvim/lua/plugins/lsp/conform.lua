@@ -14,6 +14,8 @@ return {
 			ruby = { "rubocop" },
 			elixir = { "mix" },
 
+			python = { "ruff_fix", "ruff_format", "ruff_organize_imports" },
+
 			typescript = { "prettierd", "prettier", stop_after_first = true },
 			javascript = { "prettierd", "prettier", stop_after_first = true },
 			typescriptreact = { "prettierd", "prettier", stop_after_first = true },
