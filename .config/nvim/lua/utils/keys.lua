@@ -17,7 +17,7 @@ end
 
 ---Prepends the toggle key to the given key.
 M.toggle = function(key)
-	return "t" .. key
+	return "yo" .. key
 end
 
 return M
