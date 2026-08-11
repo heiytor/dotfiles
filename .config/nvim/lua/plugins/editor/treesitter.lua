@@ -1,75 +1,103 @@
 return {
 	{
 		"nvim-treesitter/nvim-treesitter",
+		branch = "main",
+		lazy = false, -- o main nao suporta lazy-loading
 		build = ":TSUpdate",
 		config = function()
-			require("nvim-treesitter.configs").setup({
-				ensure_installed = {
-					"vim",
-					"vimdoc",
+			local ts = require("nvim-treesitter")
 
-					"lua",
-					"luadoc",
+			ts.install({
+				"vim",
+				"vimdoc",
 
-					"bash",
+				"lua",
+				"luadoc",
 
-					"go",
-					"gomod",
-					"gosum",
-					"gotmpl",
-					"gowork",
+				"bash",
 
-					"nginx",
+				"go",
+				"gomod",
+				"gosum",
+				"gotmpl",
+				"gowork",
 
-					"markdown",
-					"markdown_inline",
+				"nginx",
 
-					"javascript",
-					"typescript",
-					"html",
+				"markdown",
+				"markdown_inline",
 
-					"c",
-					"cpp",
+				"javascript",
+				"typescript",
+				"html",
 
-					"rust",
-					"json",
+				"c",
+				"cpp",
 
-					"ruby",
+				"rust",
+				"json",
 
-					"python",
-				},
+				"ruby",
 
-				indent = {
-					enable = true,
-				},
+				"python",
+			})
 
-				sync_install = false,
-				auto_install = true,
+			local max_filesize = 100 * 1024 -- 100 KB
 
-				highlight = {
-					enable = true,
-					additional_vim_regex_highlighting = { "markdown" },
+			-- no main nada e habilitado automaticamente: highlight e indent
+			-- precisam ser ligados por buffer
+			local function start(buf, lang)
+				local ok, stats = pcall(vim.uv.fs_stat, vim.api.nvim_buf_get_name(buf))
+				if ok and stats and stats.size > max_filesize then
+					vim.notify(
+						"File larger than 100KB treesitter disabled for performance",
+						vim.log.levels.WARN,
+						{ title = "Treesitter" }
+					)
 
-					disable = function(lang, buf)
-						local max_filesize = 100 * 1024 -- 100 KB
-						local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(buf))
-						if ok and stats and stats.size > max_filesize then
-							vim.notify(
-								"File larger than 100KB treesitter disabled for performance",
-								vim.log.levels.WARN,
-								{ title = "Treesitter" }
-							)
+					return
+				end
 
-							return true
-						end
-					end,
-				},
+				vim.treesitter.start(buf, lang)
+				vim.bo[buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+
+				if vim.bo[buf].filetype == "markdown" then
+					vim.bo[buf].syntax = "on"
+				end
+			end
+
+			vim.api.nvim_create_autocmd("FileType", {
+				group = vim.api.nvim_create_augroup("Treesitter", { clear = true }),
+				callback = function(args)
+					local lang = vim.treesitter.language.get_lang(vim.bo[args.buf].filetype)
+					if not lang then
+						return
+					end
+
+					if vim.treesitter.language.add(lang) then
+						start(args.buf, lang)
+						return
+					end
+
+					-- equivalente ao auto_install do branch master
+					if not vim.tbl_contains(ts.get_available(), lang) then
+						return
+					end
+
+					ts.install(lang):await(function()
+						vim.schedule(function()
+							if vim.api.nvim_buf_is_valid(args.buf) and vim.treesitter.language.add(lang) then
+								start(args.buf, lang)
+							end
+						end)
+					end)
+				end,
 			})
 		end,
 	},
 	{
 		"nvim-treesitter/nvim-treesitter-context",
-		after = "nvim-treesitter",
+		dependencies = { "nvim-treesitter/nvim-treesitter" },
 		config = function()
 			require("treesitter-context").setup({
 				enable = true,
