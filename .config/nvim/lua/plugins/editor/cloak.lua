@@ -8,7 +8,7 @@ return {
 			patterns = {
 				{
 					cloak_pattern = "=.+",
-					file_pattern = { ".env*", "*.env" },
+					file_pattern = { ".env", ".env.*", "*.env" },
 				},
 			},
 		})
