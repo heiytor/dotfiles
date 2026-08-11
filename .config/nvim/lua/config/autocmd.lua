@@ -53,19 +53,18 @@ local function apply_theme_from_file()
 	return true
 end
 
-vim.api.nvim_create_autocmd({ "ModeChanged" }, {
-	pattern = "*",
-	callback = function(_)
+vim.api.nvim_create_autocmd("LspAttach", {
+	group = vim.api.nvim_create_augroup("InlayHints", { clear = true }),
+	callback = function(args)
 		if not Inlay_hints_status then
 			return
 		end
 
-		for _, ft in ipairs(Inlay_hints_filetypes) do
-			if vim.bo.filetype == ft then
-				vim.lsp.inlay_hint.enable(true)
-				return
-			end
+		if not vim.tbl_contains(Inlay_hints_filetypes, vim.bo[args.buf].filetype) then
+			return
 		end
+
+		vim.lsp.inlay_hint.enable(true, { bufnr = args.buf })
 	end,
 })
 
