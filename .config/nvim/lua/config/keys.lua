@@ -51,7 +51,12 @@ vim.api.nvim_create_autocmd("LspAttach", {
 
         vim.keymap.set("n", keys.toggle("i"), function()
             Inlay_hints_status = not Inlay_hints_status
-            vim.lsp.inlay_hint.enable(Inlay_hints_status)
+
+            for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+                if vim.tbl_contains(Inlay_hints_filetypes, vim.bo[buf].filetype) then
+                    vim.lsp.inlay_hint.enable(Inlay_hints_status, { bufnr = buf })
+                end
+            end
         end, opts)
     end,
 })
