@@ -118,9 +118,9 @@ fi
 
 header "🖥️ Configuring Ly display manager"
 
-if ! systemctl is-enabled --quiet ly.service 2>/dev/null; then
+if ! systemctl is-enabled --quiet ly@tty2.service 2>/dev/null; then
     log "Enabling Ly to start automatically..."
-    sudo systemctl enable ly.service
+    sudo systemctl enable ly@tty2.service
     success "Ly enabled"
 else
     success "Ly is already enabled"
