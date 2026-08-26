@@ -17,6 +17,25 @@ warning() { echo -e "${YELLOW}[!]${NC} $1"; }
 error() { echo -e "${RED}[✗]${NC} $1"; }
 header() { echo -e "\n${BOLD}${BLUE}━━━ $1 ━━━${NC}\n"; }
 
+INSTALL_ERRORS=()
+
+record_error() {
+    INSTALL_ERRORS+=("$1")
+    error "$1"
+}
+
+try() {
+    local description="$1"
+    shift
+
+    if "$@"; then
+        return 0
+    fi
+
+    record_error "$description"
+    return 1
+}
+
 # Check if running as root
 if [[ $EUID -eq 0 ]]; then
    error "This script should not be run as root"
@@ -119,8 +138,9 @@ header "🖥️ Configuring Ly display manager"
 
 if ! systemctl is-enabled --quiet ly@tty2.service 2>/dev/null; then
     log "Enabling Ly to start automatically..."
-    sudo systemctl enable ly@tty2.service
-    success "Ly enabled"
+    if try "Failed to enable ly@tty2.service" sudo systemctl enable ly@tty2.service; then
+        success "Ly enabled"
+    fi
 else
     success "Ly is already enabled"
 fi
@@ -128,7 +148,9 @@ fi
 header "🐳 Setting up Docker"
 
 log "Enabling Docker service..."
-sudo systemctl enable docker
+if try "Failed to enable docker.service" sudo systemctl enable docker; then
+    success "Docker service enabled"
+fi
 
 log "Adding user to docker group..."
 sudo usermod -aG docker "$USER"
@@ -139,8 +161,9 @@ header "⚡ System optimizations"
 log "Checking for SSD devices..."
 if grep -q 0 /sys/block/*/queue/rotational 2>/dev/null; then
     log "Non-rotational device detected → enabling fstrim.timer"
-    sudo systemctl enable --now fstrim.timer
-    success "fstrim.timer enabled for SSD optimization"
+    if try "Failed to enable fstrim.timer" sudo systemctl enable --now fstrim.timer; then
+        success "fstrim.timer enabled for SSD optimization"
+    fi
 else
     log "No non-rotational device detected → skipping fstrim.timer activation"
 fi
@@ -148,9 +171,10 @@ fi
 log "Optimizing network boot behavior..."
 if systemctl is-enabled --quiet systemd-networkd-wait-online.service 2>/dev/null; then
     log "Disabling systemd-networkd-wait-online.service for faster boot..."
-    sudo systemctl disable systemd-networkd-wait-online.service
-    sudo systemctl mask systemd-networkd-wait-online.service
-    success "Network wait service disabled (faster boot)"
+    if try "Failed to disable systemd-networkd-wait-online.service" sudo systemctl disable systemd-networkd-wait-online.service \
+        && try "Failed to mask systemd-networkd-wait-online.service" sudo systemctl mask systemd-networkd-wait-online.service; then
+        success "Network wait service disabled (faster boot)"
+    fi
 else
     success "Network wait service already disabled"
 fi
@@ -161,7 +185,7 @@ if [[ -f "$HOME/.config/systemd/resolved.conf" ]]; then
     sudo cp "$HOME/.config/systemd/resolved.conf" /etc/systemd/resolved.conf
     
     log "Restarting systemd-resolved..."
-    sudo systemctl restart systemd-resolved
+    try "Failed to restart systemd-resolved" sudo systemctl restart systemd-resolved || true
     
     success "DNS configured: Cloudflare (1.1.1.1) with Google (8.8.8.8) fallback"
 else
@@ -188,8 +212,9 @@ if ls /sys/class/power_supply/BAT* &>/dev/null; then
     fi
     
     log "Setting up battery monitoring..."
-    systemctl --user enable --now de-battery-allert.timer || true
-    success "Battery monitoring enabled"
+    if try "Failed to enable de-battery-allert.timer" systemctl --user enable --now de-battery-allert.timer; then
+        success "Battery monitoring enabled"
+    fi
 else
     success "No battery detected → Desktop/workstation"
     
@@ -283,10 +308,23 @@ success "Default theme applied: simple-dark"
 
 header "🎉 Finalizing setup"
 
-success "Installation completed successfully!"
+if (( ${#INSTALL_ERRORS[@]} > 0 )); then
+    warning "Installation finished with ${#INSTALL_ERRORS[@]} error(s)"
+else
+    success "Installation completed successfully!"
+fi
 
 echo
 header "📋 Post-installation notes"
+
+if (( ${#INSTALL_ERRORS[@]} > 0 )); then
+    error "The following steps failed and need attention:"
+    for install_error in "${INSTALL_ERRORS[@]}"; do
+        echo -e "  ${RED}✗${NC} ${install_error}"
+    done
+    echo
+fi
+
 warning "Please reboot your system to ensure all changes take effect"
 echo
 success "Enjoy your new setup! 🚀"
@@ -300,4 +338,8 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     sudo reboot
 else
     warning "Remember to reboot later to complete the setup!"
+fi
+
+if (( ${#INSTALL_ERRORS[@]} > 0 )); then
+    exit 1
 fi
