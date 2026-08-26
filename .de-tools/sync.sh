@@ -4,6 +4,7 @@ set -e
 
 # Load modules
 source "$HOME/.de-tools/modules/asdf.sh"
+source "$HOME/.de-tools/modules/hypr.sh"
 source "$HOME/.de-tools/modules/logger.sh"
 source "$HOME/.de-tools/modules/packages.sh"
 
@@ -62,12 +63,19 @@ else
     record_error "Could not update packages from .de-config/ensure-installed"
 fi
 
-header "🧩 Rebuilding Hyprland plugins"
+header "🧩 Syncing Hyprland plugins"
 
 if ! command -v hyprpm &> /dev/null; then
-    log "hyprpm not found, skipping Hyprland plugins"
-elif try "Failed to rebuild Hyprland plugins (hyprpm update)" hyprpm update; then
-    success "Plugins rebuilt against the current Hyprland version"
+    record_error "hyprpm not found, skipping Hyprland plugins"
+else
+    hypr_status=0
+    sync_hypr_plugins || hypr_status=$?
+
+    case "$hypr_status" in
+        0) success "Hyprland plugins synced" ;;
+        1) warning "No .de-config/hypr-plugins file, skipping Hyprland plugins" ;;
+        *) record_error "Failed to sync one or more Hyprland plugins" ;;
+    esac
 fi
 
 header "⚡ Updating Neovim packages"

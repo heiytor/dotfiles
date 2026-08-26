@@ -1,0 +1,4 @@
+# Hyprland plugins installed and rebuilt through hyprpm
+# Format: <plugin-name> <repository-url>
+dynamic-cursors https://github.com/VirtCode/hypr-dynamic-cursors
+split-monitor-workspaces https://github.com/Duckonaut/split-monitor-workspaces

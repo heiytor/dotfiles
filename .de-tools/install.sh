@@ -122,6 +122,7 @@ success "Dotfiles repository configured"
 
 log "Loading modules..."
 source "$HOME/.de-tools/modules/asdf.sh"
+source "$HOME/.de-tools/modules/hypr.sh"
 source "$HOME/.de-tools/modules/logger.sh"
 source "$HOME/.de-tools/modules/packages.sh"
 
@@ -150,25 +151,14 @@ header "🧩 Installing Hyprland plugins"
 if ! command -v hyprpm &> /dev/null; then
     record_error "hyprpm not found, skipping Hyprland plugins"
 else
-    log "Fetching Hyprland headers..."
-    if try "Failed to fetch Hyprland headers (hyprpm update)" hyprpm update; then
-        for entry in \
-            "dynamic-cursors https://github.com/VirtCode/hypr-dynamic-cursors" \
-            "split-monitor-workspaces https://github.com/Duckonaut/split-monitor-workspaces"; do
-            plugin_name="${entry%% *}"
-            plugin_url="${entry#* }"
+    hypr_status=0
+    sync_hypr_plugins || hypr_status=$?
 
-            if hyprpm list 2>/dev/null | grep -q "Plugin $plugin_name"; then
-                success "Plugin $plugin_name already added"
-            elif try "Failed to add plugin $plugin_name" hyprpm add "$plugin_url"; then
-                success "Plugin $plugin_name added"
-            fi
-
-            if try "Failed to enable plugin $plugin_name" hyprpm enable "$plugin_name"; then
-                success "Plugin $plugin_name enabled"
-            fi
-        done
-    fi
+    case "$hypr_status" in
+        0) success "Hyprland plugins synced" ;;
+        1) warning "No .de-config/hypr-plugins file, skipping Hyprland plugins" ;;
+        *) record_error "Failed to sync one or more Hyprland plugins" ;;
+    esac
 fi
 
 header "🐳 Setting up Docker"
