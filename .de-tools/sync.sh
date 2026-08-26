@@ -2,19 +2,29 @@
 
 set -e
 
-# Helper function for safe command execution
-safe() {
-    set +e
-    "$@"
-    local status=$?
-    set -e
-    return $status
-}
-
 # Load modules
 source "$HOME/.de-tools/modules/asdf.sh"
 source "$HOME/.de-tools/modules/logger.sh"
 source "$HOME/.de-tools/modules/packages.sh"
+
+SYNC_ERRORS=()
+
+record_error() {
+    SYNC_ERRORS+=("$1")
+    error "$1"
+}
+
+try() {
+    local description="$1"
+    shift
+
+    if "$@"; then
+        return 0
+    fi
+
+    record_error "$description"
+    return 1
+}
 
 if [[ $EUID -eq 0 ]]; then
     error "This script should not be run as root"
@@ -29,14 +39,19 @@ fi
 header "📂 Syncing dotfiles"
 
 log "Pulling latest changes..."
-DOTFILES_PULL_OUTPUT=$(dotfiles pull origin main 2>&1)
 
-if echo "$DOTFILES_PULL_OUTPUT" | grep -q "Already up to date"; then
-    success "Dotfiles are already up to date"
-    dotfiles_updated=false
-else
-    warning "Updates pulled from remote repository"
-    dotfiles_updated=true
+revision_before=$(dotfiles rev-parse HEAD 2>/dev/null || echo unknown)
+dotfiles_updated=false
+
+if try "Failed to pull the dotfiles repository" dotfiles pull origin main; then
+    revision_after=$(dotfiles rev-parse HEAD 2>/dev/null || echo unknown)
+
+    if [[ "$revision_before" == "$revision_after" ]]; then
+        success "Dotfiles are already up to date"
+    else
+        warning "Updates pulled from remote repository"
+        dotfiles_updated=true
+    fi
 fi
 
 header "📦 Updating essential packages"
@@ -44,7 +59,15 @@ header "📦 Updating essential packages"
 if sync_system_pkgs; then
     success "Packages updated"
 else
-    warning "Could not update packages from .de-config/ensure-installed"
+    record_error "Could not update packages from .de-config/ensure-installed"
+fi
+
+header "🧩 Rebuilding Hyprland plugins"
+
+if ! command -v hyprpm &> /dev/null; then
+    log "hyprpm not found, skipping Hyprland plugins"
+elif try "Failed to rebuild Hyprland plugins (hyprpm update)" hyprpm update; then
+    success "Plugins rebuilt against the current Hyprland version"
 fi
 
 header "⚡ Updating Neovim packages"
@@ -60,7 +83,11 @@ header "🐚 Updating Oh My Zsh and plugins"
 log "Updating Oh My Zsh..."
 
 if [[ -f "$HOME/.oh-my-zsh/tools/upgrade.sh" ]]; then
-    "$HOME/.oh-my-zsh/tools/upgrade.sh" > /dev/null 2>&1
+    if "$HOME/.oh-my-zsh/tools/upgrade.sh" > /dev/null 2>&1; then
+        success "Oh My Zsh updated"
+    else
+        record_error "Failed to upgrade Oh My Zsh"
+    fi
 else
     warning "Oh My Zsh not found"
 fi
@@ -73,11 +100,15 @@ else
 fi
 
 header "🔧 Updating asdf plugins"
-if setup_asdf; then
-    success "asdf plugins updated"
-else
-    log "No .tool-versions file or plugins already configured"
-fi
+
+asdf_status=0
+setup_asdf || asdf_status=$?
+
+case "$asdf_status" in
+    0) success "asdf plugins updated" ;;
+    1) log "No .tool-versions file, skipping asdf plugins" ;;
+    *) record_error "Failed to install one or more asdf tools" ;;
+esac
 
 header "✨ Sync Complete"
 
@@ -88,9 +119,23 @@ else
     success "Everything is already up to date!"
 fi
 
+if (( ${#SYNC_ERRORS[@]} > 0 )); then
+    echo
+    error "The following steps failed and need attention:"
+    for sync_error in "${SYNC_ERRORS[@]}"; do
+        echo -e "  ${RED}✗${NC} ${sync_error}"
+    done
+fi
+
 echo
 log "To see what changed, run: dotfiles log HEAD@{1}..HEAD"
 log "To view status, run: dotfiles status"
 
-log "Reloading Zsh configuration..."
-exec zsh
+if [[ -t 0 && -t 1 ]]; then
+    log "Reloading Zsh configuration..."
+    exec zsh
+fi
+
+if (( ${#SYNC_ERRORS[@]} > 0 )); then
+    exit 1
+fi
