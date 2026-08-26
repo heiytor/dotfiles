@@ -67,15 +67,35 @@ dotfiles() {
 
 log "Checking out dotfiles..."
 
-checkout_output=$(dotfiles checkout 2>&1)
-checkout_code=$?
+if ! checkout_output=$(dotfiles checkout 2>&1); then
+    conflicts=$(printf '%s\n' "$checkout_output" | grep -E '^[[:space:]]+' | sed 's/^[[:space:]]*//')
 
-if (( checkout_code == 0 )); then
-    success "Dotfiles checked out successfully"
+    if [[ -z "$conflicts" ]]; then
+        error "Checkout failed:"
+        echo "$checkout_output"
+        exit 1
+    fi
+
+    backup_dir="$HOME/dotfiles-backup-$(date +%Y%m%d)"
+    warning "Some files already exist in \$HOME and would be overwritten"
+    log "Backing them up to $backup_dir"
+
+    while IFS= read -r file; do
+        [[ -z "$file" ]] && continue
+        mkdir -p "$backup_dir/$(dirname "$file")"
+        mv "$HOME/$file" "$backup_dir/$file"
+        log "Backed up $file"
+    done <<< "$conflicts"
+
+    if ! checkout_output=$(dotfiles checkout 2>&1); then
+        error "Checkout failed after backing up conflicting files:"
+        echo "$checkout_output"
+        exit 1
+    fi
+
+    success "Dotfiles checked out (previous files saved in $backup_dir)"
 else
-    error "Checkout failed:"
-    echo "$checkout_output"
-    exit 1
+    success "Dotfiles checked out successfully"
 fi
 
 log "Configuring dotfiles repository..."
