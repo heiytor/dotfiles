@@ -9,6 +9,7 @@ brave-bin
 brightnessctl
 btop
 cliphist
+cmake
 cpio
 dialog
 direnv
@@ -58,6 +59,7 @@ lsof
 ly
 mako
 man-db
+meson
 mtools
 networkmanager
 network-manager-applet

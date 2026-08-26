@@ -145,6 +145,32 @@ else
     success "Ly is already enabled"
 fi
 
+header "🧩 Installing Hyprland plugins"
+
+if ! command -v hyprpm &> /dev/null; then
+    record_error "hyprpm not found, skipping Hyprland plugins"
+else
+    log "Fetching Hyprland headers..."
+    if try "Failed to fetch Hyprland headers (hyprpm update)" hyprpm update; then
+        for entry in \
+            "dynamic-cursors https://github.com/VirtCode/hypr-dynamic-cursors" \
+            "split-monitor-workspaces https://github.com/Duckonaut/split-monitor-workspaces"; do
+            plugin_name="${entry%% *}"
+            plugin_url="${entry#* }"
+
+            if hyprpm list 2>/dev/null | grep -q "Plugin $plugin_name"; then
+                success "Plugin $plugin_name already added"
+            elif try "Failed to add plugin $plugin_name" hyprpm add "$plugin_url"; then
+                success "Plugin $plugin_name added"
+            fi
+
+            if try "Failed to enable plugin $plugin_name" hyprpm enable "$plugin_name"; then
+                success "Plugin $plugin_name enabled"
+            fi
+        done
+    fi
+fi
+
 header "🐳 Setting up Docker"
 
 log "Enabling Docker service..."
