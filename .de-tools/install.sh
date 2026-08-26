@@ -52,13 +52,12 @@ fi
 header "📂 Cloning dotfiles repository"
 
 if [[ -d "$HOME/.dotfiles" ]]; then
-    error "Dotfiles directory already exists at $HOME/.dotfiles"
-    exit 1
+    success "Repository already cloned at $HOME/.dotfiles, skipping"
+else
+    log "Cloning bare repository..."
+    git clone --bare https://github.com/heiytor/dotfiles.git "$HOME/.dotfiles"
+    success "Repository cloned"
 fi
-
-log "Cloning bare repository..."
-git clone --bare https://github.com/heiytor/dotfiles.git "$HOME/.dotfiles"
-success "Repository cloned"
 
 # Dotfiles git wrapper function (needed before modules are available)
 dotfiles() {
