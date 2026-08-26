@@ -8,17 +8,27 @@ setup_asdf() {
         return 1
     fi
     
+    local failed=0
+
     while IFS= read -r line; do
         tool_name=$(echo "$line" | awk '{print $1}')
         
         if [[ -n "$tool_name" ]]; then
             if ! asdf plugin list | grep -q "^$tool_name$" 2>/dev/null; then
-                asdf plugin add "$tool_name" 2>/dev/null
+                if ! asdf plugin add "$tool_name"; then
+                    failed=1
+                fi
             fi
         fi
     done < "$tool_versions"
     
-    asdf install
+    if ! asdf install; then
+        failed=1
+    fi
+
+    if (( failed )); then
+        return 2
+    fi
 
     return 0
 }

@@ -293,11 +293,14 @@ success "Zsh set as default shell"
 
 header "🔧 Setting up asdf plugins"
 
-if setup_asdf; then
-    success "asdf plugins setup completed"
-else
-    warning ".tool-versions file not found, skipping asdf plugins"
-fi
+asdf_status=0
+setup_asdf || asdf_status=$?
+
+case "$asdf_status" in
+    0) success "asdf plugins setup completed" ;;
+    1) warning ".tool-versions file not found, skipping asdf plugins" ;;
+    *) record_error "Failed to install one or more asdf tools" ;;
+esac
 
 header "🎨 Configuring default theme"
 
