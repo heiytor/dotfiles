@@ -14,6 +14,7 @@ cpio
 dialog
 direnv
 docker
+docker-buildx
 docker-compose
 dosfstools
 efibootmgr
@@ -35,6 +36,7 @@ git-filter-repo
 github-cli
 gnome-keyring
 gnome-themes-extra
+go-yq
 grim
 gum
 gvfs-mtp
