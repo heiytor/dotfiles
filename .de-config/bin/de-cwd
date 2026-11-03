@@ -1,39 +1,53 @@
 #!/usr/bin/env bash
 
+# Prints the working directory of the shell in the focused terminal, so a new
+# terminal can open where you already are. Falls back to $HOME.
+#
+#   de-cwd          uses the active Hyprland window
+#   de-cwd <pid>    uses the given terminal process (handy for testing)
+
+# The terminal's shell is a child that leads its own session on a tty. Other
+# children (kitty runs kitten helpers next to the shell) are not, so they are
+# skipped. With several shells (tabs), the newest one wins.
 get_terminal_cwd() {
-  local parent_pid=$1
-  local shell_pid
-  shell_pid=$(pgrep --parent "$parent_pid")
-  if [ -n "$shell_pid" ]; then
-    readlink -f "/proc/$shell_pid/cwd" 2>/dev/null
-  fi
+  local terminal_pid=$1 shell_pid="" children_file child stat session tty_nr
+
+  for children_file in /proc/"$terminal_pid"/task/*/children; do
+    [[ -r $children_file ]] || continue
+    read -ra children <"$children_file" || true
+
+    for child in "${children[@]}"; do
+      read -r stat 2>/dev/null <"/proc/$child/stat" || continue
+      read -r _ _ _ session tty_nr _ <<<"${stat##*) }"
+
+      if (( session == child && tty_nr != 0 && child > ${shell_pid:-0} )); then
+        grep -Fqsx "$(readlink -f "/proc/$child/exe")" /etc/shells && shell_pid=$child
+      fi
+    done
+  done
+
+  [[ -n $shell_pid ]] && readlink -f "/proc/$shell_pid/cwd" 2>/dev/null
 }
 
 main() {
-  local final_cwd="$HOME"
-  local found_path
-  
-  local active_window_info
-  active_window_info=$(hyprctl activewindow -j)
+  local pid=$1 class cwd=""
 
-  local active_class
-  active_class=$(echo "$active_window_info" | jq -r '.class // empty')
+  if [[ -z $pid ]]; then
+    read -r class pid < <(hyprctl activewindow -j | jq -r '"\(.class // "-") \(.pid // "")"')
 
-  local _pid
-  _pid=$(echo "$active_window_info" | jq -r '.pid // empty')
-  if [ -n "$active_class" ]; then
-    case "$active_class" in
-      kitty|Alacritty|Gnome-terminal|foot|wezterm)
-        found_path=$(get_terminal_cwd "$_pid")
-        ;;
+    case "$class" in
+      kitty | Alacritty | Gnome-terminal | foot | wezterm | org.wezfurlong.wezterm | com.mitchellh.ghostty) ;;
+      *) pid="" ;;
     esac
   fi
 
-  if [ -n "$found_path" ]; then
-    final_cwd="$found_path"
-  fi
+  [[ -n $pid ]] && cwd=$(get_terminal_cwd "$pid")
 
-  echo "$final_cwd"
+  if [[ -d $cwd ]]; then
+    echo "$cwd"
+  else
+    echo "$HOME"
+  fi
 }
 
 main "$@"
