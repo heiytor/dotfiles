@@ -11,7 +11,7 @@ require("apps")
 require("plugins")
 require("bindings")
 require("autostart")
--- require("permission") -- disabled, see permission.lua
+require("permission")
 
 -- Theme colors, switched by de-theme-set (symlink + hyprctl reload)
 require("~/.de-config/themes/current/hypr")
