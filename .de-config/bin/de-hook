@@ -3,6 +3,8 @@
 # Runs the user hooks for an event:
 #   ~/.de-config/hooks/<name>      (single hook)
 #   ~/.de-config/hooks/<name>.d/*  (several hooks, in lexical order)
+# then the same layout under ~/.de-config/hooks/local/, which git ignores so
+# each machine can keep its own hooks.
 #
 # Executable files run directly (their shebang decides the interpreter),
 # everything else runs with sh. Files ending in .sample are skipped.
@@ -37,16 +39,19 @@ run_hook() {
     fi || echo "Hook failed: $hook" >&2
 }
 
-if [ -f "$HOOKS_DIR/$NAME" ]; then
-    run_hook "$HOOKS_DIR/$NAME" "$@"
-fi
+# Versioned hooks first, then the ones for this machine only
+for dir in "$HOOKS_DIR" "$HOOKS_DIR/local"; do
+    if [ -f "$dir/$NAME" ]; then
+        run_hook "$dir/$NAME" "$@"
+    fi
 
-if [ -d "$HOOKS_DIR/$NAME.d" ]; then
-    for hook_file in "$HOOKS_DIR/$NAME.d"/*; do
-        [ -f "$hook_file" ] || continue
-        case "$hook_file" in *.sample) continue ;; esac
-        run_hook "$hook_file" "$@"
-    done
-fi
+    if [ -d "$dir/$NAME.d" ]; then
+        for hook_file in "$dir/$NAME.d"/*; do
+            [ -f "$hook_file" ] || continue
+            case "$hook_file" in *.sample) continue ;; esac
+            run_hook "$hook_file" "$@"
+        done
+    fi
+done
 
 exit 0

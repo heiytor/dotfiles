@@ -1,0 +1,5 @@
+#!/usr/bin/env sh
+
+# Redraws the waybar custom/powerprofile module right away instead of waiting for its
+# polling interval. The signal number matches "signal" in waybar/config.jsonc.
+pkill -RTMIN+10 -x waybar || true

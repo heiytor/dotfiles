@@ -53,7 +53,9 @@
         "format": "{}",
         "exec": "de-keyboard-layout-get",
         "on-click": "de-keyboard-layout-cycle notify",
-        "interval": 1,
+        // Refreshed on change by the keyboard-layout-set hook; the interval is a fallback
+        "interval": 30,
+        "signal": 8,
         "tooltip": false
     },
     "tray": {
@@ -143,14 +145,19 @@
         "format": "{}",
         "exec": "de-idle-status",
         "on-click": "de-idle-toggle notify",
-        "interval": 1
+        // Refreshed on change by the idle-toggle hook; the interval is a fallback
+        "interval": 30,
+        "signal": 9
     },
     "custom/powerprofile": {
         "tooltip": false,
         "format": "{}",
         "exec": "de-powerprofile-get --short",
         "on-click": "de-powerprofile-cycle notify",
-        "interval": 1
+        // Refreshed on change by the powerprofile-set hook; the shorter fallback
+        // catches profiles changed outside de-powerprofile-set
+        "interval": 10,
+        "signal": 10
     },
     "group/misc": {
         "orientation": "inherit",

@@ -1,0 +1,5 @@
+#!/usr/bin/env sh
+
+# Redraws the waybar custom/idle module right away instead of waiting for its
+# polling interval. The signal number matches "signal" in waybar/config.jsonc.
+pkill -RTMIN+9 -x waybar || true

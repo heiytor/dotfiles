@@ -1,0 +1,5 @@
+#!/usr/bin/env sh
+
+# Redraws the waybar custom/language module right away instead of waiting for its
+# polling interval. The signal number matches "signal" in waybar/config.jsonc.
+pkill -RTMIN+8 -x waybar || true

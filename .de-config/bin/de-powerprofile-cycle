@@ -18,7 +18,8 @@ case "$current" in
     *) next_profile="balanced" ;;
 esac
 
-if powerprofilesctl set "$next_profile"; then
+# Through de-powerprofile-set, so the powerprofile-set hooks run too
+if de-powerprofile-set "$next_profile" >/dev/null; then
     if [ "$1" = "notify" ]; then
         notify-send "Power Profile" "Changed: $current → $next_profile"
     fi

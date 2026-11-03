@@ -3,6 +3,10 @@
 # Example hook. Drop the .sample suffix to enable it, or put files in a
 # <name>.d/ directory to run several. Hooks run through de-hook.
 #
+# Hooks here are versioned and run on every machine. Hooks for one machine
+# only go in local/ with the same layout (local/<name>, local/<name>.d/); git
+# ignores everything there.
+#
 # Events and their arguments:
 #   theme-set            <theme-name>             after de-theme-set applied a theme
 #   keyboard-layout-set  <us|br>                  after de-keyboard-layout-set

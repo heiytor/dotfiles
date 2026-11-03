@@ -1,0 +1,4 @@
+# Machine-local hooks: everything here stays out of git
+*
+!.keep
+!.gitignore
