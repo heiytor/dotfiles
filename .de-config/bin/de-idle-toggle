@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-STATE_FILE="/run/user/$UID/de-idle-state"
+STATE_FILE="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/de-idle-state"
 NOTIFY=$1
 
 if [ ! -f "$STATE_FILE" ]; then

@@ -1,6 +1,6 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
-STATE_DIR="/run/user/$UID/hyprland"
+STATE_DIR="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/hyprland"
 WORKSPACE_ID=$(hyprctl activeworkspace -j | jq -r '.id')
 ORIENTATION_FILE="$STATE_DIR/master_orientation_ws${WORKSPACE_ID}"
 

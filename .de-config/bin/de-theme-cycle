@@ -1,6 +1,9 @@
 #!/usr/bin/env sh
 
-THEMES=$(ls -1 "$HOME/.de-config/themes" | grep -v '^current$' | sort)
+THEMES=$(for theme in "$HOME"/.de-config/themes/*/; do
+    theme=$(basename "$theme")
+    [ "$theme" != "current" ] && echo "$theme"
+done | sort)
 CURRENT_THEME=$(de-theme-get name 2>/dev/null || echo "")
 
 NEXT_THEME=""

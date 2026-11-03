@@ -21,7 +21,7 @@ if [ $# -eq 0 ]; then
     exit 1
 fi
 
-STATE_DIR="/run/user/$UID/hyprland"
+STATE_DIR="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/hyprland"
 mkdir -p "$STATE_DIR"
 LOCKFILE="$STATE_DIR/screenshot.lock"
 if [ -f "$LOCKFILE" ]; then

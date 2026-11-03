@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 set -e
 
-if command -v powerprofilesctl &> /dev/null; then
+if command -v powerprofilesctl >/dev/null 2>&1; then
    profile=$(powerprofilesctl get)
    
    if [ "$1" = "--short" ]; then

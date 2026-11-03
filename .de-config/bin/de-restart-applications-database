@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 DE_APPS="$HOME/.de-config/applications"
 DE_WEBAPPS="$HOME/.de-config/applications/webapps"
@@ -61,5 +61,5 @@ sync_files "$DE_APPS" "$LOCAL_APPS"
 sync_files "$DE_WEBAPPS" "$LOCAL_APPS"
 sync_files "$DE_APPS/hidden" "$LOCAL_APPS"
 
-gtk-update-icon-cache "$HOME/.local/share/icons/hicolor" &>/dev/null
+gtk-update-icon-cache "$HOME/.local/share/icons/hicolor" >/dev/null 2>&1
 sudo update-desktop-database "$LOCAL_APPS"

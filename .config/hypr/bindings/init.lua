@@ -1,0 +1,5 @@
+require("bindings.workspace")
+require("bindings.hypr")
+require("bindings.client")
+require("bindings.laptop")
+require("bindings.app")

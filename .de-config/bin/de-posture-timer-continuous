@@ -21,11 +21,11 @@ cycle() {
         esac
     fi
 
-    echo $(cat "$STATE_FILE")
+    cat "$STATE_FILE"
 }
 
-STATE_FILE="/run/user/$UID/de-posture-state"
-TIMER_FILE="/run/user/$UID/de-posture-timer"
+STATE_FILE="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/de-posture-state"
+TIMER_FILE="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/de-posture-timer"
 
 if [ ! -f "$STATE_FILE" ]; then
     echo "inactive" > "$STATE_FILE"
@@ -37,10 +37,10 @@ while true; do
     else
         case $(cycle) in
             "sitting")
-                echo $(printf '{"text":"🪑","alt":"sitting for %dm"}' "$(($(remaining) / 60))")
+                printf '{"text":"🪑","alt":"sitting for %dm"}\n' "$(($(remaining) / 60))"
                 ;;
             "standing")
-                echo $(printf '{"text":"🧍","alt":"standing for %dm"}' "$(($(remaining) / 60))")
+                printf '{"text":"🧍","alt":"standing for %dm"}\n' "$(($(remaining) / 60))"
                 ;;
         esac
     fi

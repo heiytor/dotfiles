@@ -8,8 +8,8 @@ set_timer() {
     echo "$1" > "$TIMER_FILE"
 }
 
-STATE_FILE="/run/user/$UID/de-posture-state"
-TIMER_FILE="/run/user/$UID/de-posture-timer"
+STATE_FILE="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/de-posture-state"
+TIMER_FILE="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/de-posture-timer"
 
 MODE=$1
 TIMER=$2

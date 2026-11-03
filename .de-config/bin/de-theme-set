@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 available_themes() {
     echo "Available themes:" >&2

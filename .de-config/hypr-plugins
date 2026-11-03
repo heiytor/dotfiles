@@ -1,4 +1,12 @@
-# Hyprland plugins installed and rebuilt through hyprpm
-# Format: <plugin-name> <repository-url>
-dynamic-cursors https://github.com/VirtCode/hypr-dynamic-cursors
-split-monitor-workspaces https://github.com/Duckonaut/split-monitor-workspaces
+# Hyprland plugins installed and updated by de-sync
+# Format: <kind> <name> <repository-url>
+#
+# kind:
+#   hyprpm - compiled plugin, built and enabled through hyprpm
+#   lua    - Lua package, cloned into ~/.local/share/hypr/lua/<name> and checked out on
+#            release/<hyprland major.minor>.x when that branch exists (default branch otherwise)
+#
+# hyprpm plugins not listed here are disabled on sync.
+
+hyprpm dynamic-cursors          https://github.com/VirtCode/hypr-dynamic-cursors
+lua    split-monitor-workspaces https://github.com/zjeffer/split-monitor-workspaces

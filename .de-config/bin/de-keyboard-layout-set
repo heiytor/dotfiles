@@ -7,5 +7,6 @@ if [ "$1" != "br" ] && [ "$1" != "us" ]; then
    exit 1
 fi
 
-hyprctl keyword input:kb_layout "$1"
+# Saved first: ~/.config/hypr/env.lua reads it, so the layout survives config reloads
 echo "$1" > "$HOME/.de-config/session/keyboard_layout"
+hyprctl eval "hl.config({ input = { kb_layout = \"$1\" } })" > /dev/null

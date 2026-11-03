@@ -1,9 +1,9 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 # Hyprland master layout orientation cycler - maintains per-workspace orientation state
 # Cycles through left -> top -> center -> left for each workspace independently
 
-STATE_DIR="/run/user/$UID/hyprland"
+STATE_DIR="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/hyprland"
 mkdir -p "$STATE_DIR"
 
 WORKSPACE_ID=$(hyprctl activeworkspace -j | jq -r '.id')
@@ -30,5 +30,5 @@ case "$current_orientation" in
         ;;
 esac
 
-hyprctl dispatch layoutmsg orientation"$new_orientation"
+hyprctl dispatch "hl.dsp.layout(\"orientation${new_orientation}\")" > /dev/null
 echo "$new_orientation" > "$ORIENTATION_FILE"

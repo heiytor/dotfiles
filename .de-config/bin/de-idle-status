@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-STATE_FILE="/run/user/$UID/de-idle-state"
+STATE_FILE="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/de-idle-state"
 
 if [ ! -f "$STATE_FILE" ]; then
     if pgrep -x hypridle > /dev/null; then

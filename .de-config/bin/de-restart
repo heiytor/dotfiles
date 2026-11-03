@@ -11,8 +11,6 @@ pkill -USR1 nvim
 makoctl reload
 hyprctl reload
 
-de-keyboard-layout-set $(de-keyboard-layout-get)
-
 if [ "$1" = "notify" ]; then
     notify-send "DE restarted"
 fi
