@@ -10,6 +10,7 @@ require("rules")
 require("apps")
 require("plugins")
 require("bindings")
+require("primary-monitor")
 require("autostart")
 require("permission")
 
