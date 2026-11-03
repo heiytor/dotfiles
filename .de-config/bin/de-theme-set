@@ -49,3 +49,4 @@ else
 fi
 
 de-restart
+de-hook theme-set "$THEME_NAME"

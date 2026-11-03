@@ -1,0 +1,14 @@
+#!/usr/bin/env sh
+
+# Example hook. Drop the .sample suffix to enable it, or put files in a
+# <name>.d/ directory to run several. Hooks run through de-hook.
+#
+# Events and their arguments:
+#   theme-set            <theme-name>             after de-theme-set applied a theme
+#   keyboard-layout-set  <us|br>                  after de-keyboard-layout-set
+#   powerprofile-set     <profile>                after de-powerprofile-set
+#   idle-toggle          <active|inactive>        after de-idle-toggle
+#   posture-change       <sit|stand|stop>         after de-posture-timer-set (runs in the background)
+#   post-sync            <true|false>             at the end of de-sync, true when dotfiles changed
+
+de-notification-send "Theme" "Switched to $1"

@@ -1,0 +1,52 @@
+#!/usr/bin/env sh
+
+# Runs the user hooks for an event:
+#   ~/.de-config/hooks/<name>      (single hook)
+#   ~/.de-config/hooks/<name>.d/*  (several hooks, in lexical order)
+#
+# Executable files run directly (their shebang decides the interpreter),
+# everything else runs with sh. Files ending in .sample are skipped.
+# A failing hook is reported but never stops the caller.
+
+if [ $# -lt 1 ]; then
+    echo "Usage: $(basename "$0") <name> [args...]" >&2
+    exit 1
+fi
+
+NAME=$1
+shift
+
+# The name becomes a path, so it must not climb out of the hooks directory
+case "$NAME" in
+    "" | . | .. | */*)
+        echo "Invalid hook name: $NAME" >&2
+        exit 2
+        ;;
+esac
+
+HOOKS_DIR="$HOME/.de-config/hooks"
+
+run_hook() {
+    hook=$1
+    shift
+
+    if [ -x "$hook" ]; then
+        "$hook" "$@"
+    else
+        sh "$hook" "$@"
+    fi || echo "Hook failed: $hook" >&2
+}
+
+if [ -f "$HOOKS_DIR/$NAME" ]; then
+    run_hook "$HOOKS_DIR/$NAME" "$@"
+fi
+
+if [ -d "$HOOKS_DIR/$NAME.d" ]; then
+    for hook_file in "$HOOKS_DIR/$NAME.d"/*; do
+        [ -f "$hook_file" ] || continue
+        case "$hook_file" in *.sample) continue ;; esac
+        run_hook "$hook_file" "$@"
+    done
+fi
+
+exit 0

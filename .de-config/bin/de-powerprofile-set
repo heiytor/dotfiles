@@ -17,6 +17,7 @@ case "$profile" in
             if ! powerprofilesctl set "$profile"; then
                 exit 1
             fi
+            de-hook powerprofile-set "$profile"
         else
             echo "Error: powerprofilesctl not found"
             exit 1

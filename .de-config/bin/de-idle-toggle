@@ -18,6 +18,7 @@ case $(cat "$STATE_FILE") in
         if [ "$NOTIFY" = "notify" ]; then
             notify-send "Idle lock disabled"
         fi
+        de-hook idle-toggle inactive
         ;;
     "inactive")
         uwsm-app -- hypridle > /dev/null 2>&1 &
@@ -25,5 +26,6 @@ case $(cat "$STATE_FILE") in
         if [ "$NOTIFY" = "notify" ]; then
             notify-send "Idle lock enabled"
         fi
+        de-hook idle-toggle active
         ;;
 esac

@@ -10,3 +10,5 @@ fi
 # Saved first: ~/.config/hypr/env.lua reads it, so the layout survives config reloads
 echo "$1" > "$HOME/.de-config/session/keyboard_layout"
 hyprctl eval "hl.config({ input = { kb_layout = \"$1\" } })" > /dev/null
+
+de-hook keyboard-layout-set "$1"

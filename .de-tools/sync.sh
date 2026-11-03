@@ -118,6 +118,10 @@ case "$asdf_status" in
     *) record_error "Failed to install one or more asdf tools" ;;
 esac
 
+header "🪝 Running post-sync hooks"
+
+"$HOME/.de-config/bin/de-hook" post-sync "$dotfiles_updated"
+
 header "✨ Sync Complete"
 
 if [[ "$dotfiles_updated" == true ]]; then

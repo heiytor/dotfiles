@@ -66,3 +66,6 @@ case "$MODE" in
         exit 1
         ;;
 esac
+
+# In the background, since this runs inside the waybar module loop
+de-hook posture-change "$MODE" &
