@@ -42,12 +42,21 @@ if echo "$ICON" | grep -q "^https\?://"; then
     fi
 fi
 
+# Brave names an --app window after the URL's host and path, so de-launch can
+# focus an open instance instead of starting another one. Dots stay unescaped:
+# the pattern is anchored, and backslashes would need escaping in Exec=.
+URL_ADDRESS=$(echo "$APP_URL" | sed -E 's|^[a-zA-Z]+://||; s|[?#].*||')
+URL_HOST=${URL_ADDRESS%%/*}
+URL_PATH=${URL_ADDRESS#"$URL_HOST"}
+URL_HOST=$(echo "${URL_HOST##*@}" | sed 's|:.*||' | tr '[:upper:]' '[:lower:]')
+WINDOW_CLASS=$(printf 'brave-%s_%s-.*' "$URL_HOST" "${URL_PATH:-/}" | sed 's|/|_|g')
+
 cat > "$DESKTOP_FILE" << EOF
 [Desktop Entry]
 Version=1.0
 Name=$APP_NAME
 Comment=$APP_NAME Web App
-Exec=brave --app="$APP_URL"
+Exec=de-launch --focus "$WINDOW_CLASS" -- brave --app="$APP_URL"
 Icon=$ICON_PATH
 Type=Application
 Categories=Network;

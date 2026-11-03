@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+
+# Launches an app through uwsm. With --focus, an existing window whose class
+# fully matches the pattern is focused instead of starting another instance.
+#
+#   de-launch -- kitty
+#   de-launch --focus brave-browser -- brave --new-window
+#   de-launch --focus 'brave-teams\.cloud\.microsoft__-Default' -- brave --app=https://teams.cloud.microsoft/
+
+show_usage() {
+    echo "Usage: $(basename "$0") [--focus <class-regex>] [--] <command> [args...]" >&2
+}
+
+FOCUS_CLASS=""
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        -f | --focus)
+            [[ -n $2 ]] || { show_usage; exit 1; }
+            FOCUS_CLASS=$2
+            shift 2
+            ;;
+        -h | --help)
+            show_usage
+            exit 0
+            ;;
+        --)
+            shift
+            break
+            ;;
+        *)
+            break
+            ;;
+    esac
+done
+
+if [[ $# -eq 0 ]]; then
+    show_usage
+    exit 1
+fi
+
+if [[ -n $FOCUS_CLASS ]]; then
+    # Anchored, so "brave-browser" never matches a "brave-<webapp>" window
+    address=$(hyprctl clients -j | jq -r --arg re "^(${FOCUS_CLASS})$" \
+        'first(.[] | select(.class | test($re)) | .address) // empty')
+
+    if [[ -n $address ]]; then
+        hyprctl dispatch "hl.dsp.focus({ window = \"address:$address\" })" >/dev/null
+        exit 0
+    fi
+fi
+
+exec setsid uwsm app -- "$@" >/dev/null 2>&1
