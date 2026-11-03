@@ -107,7 +107,7 @@ vesktop-bin
 vim
 vlc
 walker
-waybar
+waybar-git
 wayfreeze
 wireplumber
 wl-clipboard
