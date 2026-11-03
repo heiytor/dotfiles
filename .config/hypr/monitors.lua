@@ -2,8 +2,8 @@
 -- See https://wiki.hypr.land/configuring/core/monitors/
 --
 -- The Samsung is the primary monitor whenever it is connected (it comes and goes
--- with the KVM switch): it gets workspaces 1-9, is "monitor 1" for SUPER + ALT + 1,
--- and takes focus and the cursor when it shows up.
+-- with the KVM switch): it is "monitor 1" for SUPER + ALT + 1
+-- and it takes focus and the cursor when it shows up.
 
 local M = {}
 

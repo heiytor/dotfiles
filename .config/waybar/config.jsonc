@@ -34,11 +34,20 @@
             "7": "7",
             "8": "8",
             "9": "9",
+            // split-monitor-workspaces gives the second monitor 10-18: label them 1-9 too
+            "10": "1",
+            "11": "2",
+            "12": "3",
+            "13": "4",
+            "14": "5",
+            "15": "6",
+            "16": "7",
+            "17": "8",
+            "18": "9",
             "active": "󱓻"
-        },
-        "persistent-workspaces": {
-            "*": 9
         }
+        // No persistent-workspaces: split-monitor-workspaces already keeps each
+        // monitor's 9 workspaces alive, and "*" would draw 1-9 on every monitor
     },
     "custom/language": {
         "format": "{}",
